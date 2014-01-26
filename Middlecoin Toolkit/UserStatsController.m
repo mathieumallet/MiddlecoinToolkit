@@ -34,8 +34,8 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
+    [self setAllValuesTo:@"Loading..."];
     [self refresh:nil];
-    
 }
 
 - (void)didReceiveMemoryWarning
@@ -52,7 +52,6 @@
 - (IBAction)refresh:(id)sender {
     if ([self isPoolPage])
     {
-        [self setAllValuesTo:@"Loading..."];
         [self loadDataFor:nil];
     }
     else
@@ -68,7 +67,6 @@
         }
         else
         {
-            [self setAllValuesTo:@"Loading..."];
             [self loadDataFor:address];
         }
     }
@@ -132,112 +130,133 @@
         htmlUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://middlecoin2.s3-website-us-west-2.amazonaws.com/reports/%@.html", payoutAddress]];
     //NSLog(@"loading data from %@...", htmlUrl);
     
-    NSError *error = nil;
-    NSString *htmlData = [NSString stringWithContentsOfURL:htmlUrl encoding:NSUTF8StringEncoding error:&error];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     
-    if (!htmlData)
-    {
-         [self setWebViewTextTo:[NSString stringWithFormat:@"<h1>Failed to load HTML data due to error: %@</h1>", error.localizedDescription]];
-        [self setAllValuesTo:@"Error"];
-        return;
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        NSError *error = nil;
+        NSString *htmlData = [NSString stringWithContentsOfURL:htmlUrl encoding:NSUTF8StringEncoding error:&error];
+        
+        if (!htmlData)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [self setWebViewTextTo:[NSString stringWithFormat:@"<h1>Failed to load HTML data due to error: %@</h1>", error.localizedDescription]];
+                [self setAllValuesTo:@"Error"];
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            });
+            return;
+        }
+        
+        // HTML data successfully loaded. Now do some parsing.
+        
+        // Get Javascript URL
+        NSURL *jsUrl = [NSURL URLWithString:[self extractStringFromHTML:htmlData usingRegex:@".*<script .*\"(http://.*)\"></script>.*" getLast:false]];
+        if (jsUrl == nil)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [self setWebViewTextTo:@"Failed to parse received HTML data."];
+                [self setAllValuesTo:@"N/A"];
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            });
+            return;
+        }
+        
+        // Now parse the other stuff on the HTML page (e.g. last payout amount and last update date)
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            self.payoutAddressLabel.text = payoutAddress;
+            // Get last payout amount
+            NSString *lastPayoutAmountString = [self extractStringFromHTML:htmlData
+                                                                usingRegex:@"m.</td>\n<td>(.*)</td>\n</tr>" getLast:true];
+            self.payoutAmountLabel.text = [lastPayoutAmountString stringByAppendingString:@" BTC"];
+            
+            NSString *lastPayoutDateString = [self extractStringFromHTML:htmlData
+                                                              usingRegex:@"</td>\n<td>(.*)</td>\n<td>" getLast:true];
+            self.payoutDateLabel.text = [self convertToLocalDate:lastPayoutDateString];
+            
+            if (isPool)
+            {
+                NSString *totalPaidOutString = [self extractStringFromHTML:htmlData
+                                                                usingRegex:@"<td>(.*)</td>\n</tr>" getLast:true];
+                self.totalPaidOutLabel.text = [totalPaidOutString stringByAppendingString:@" BTC"];
+            }
+            else
+            {
+                NSString *totalPaidOutString = [self extractStringFromHTML:htmlData
+                                                                usingRegex:@"<td>(.*)</a></td>\n</tr>" getLast:true];
+                self.totalPaidOutLabel.text = [totalPaidOutString stringByAppendingString:@" BTC"];
+            }
+        });
+        
+        // Now download the javascript data.
+        NSString *jsData = [NSString stringWithContentsOfURL:jsUrl encoding:NSUTF8StringEncoding error:&error];
+        
+        jsData = [jsData stringByReplacingOccurrencesOfString:@"ctx.fillRect(940+1,0,1000,20-4);" withString:@"ctx.clearRect(940+1,0,1000,20-4);"];
+        
+        if ([@"" isEqualToString:jsData])
+        {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [self setWebViewTextTo:@"<h1>Failed to load graph data.</h1>"];
+                [self setAllValuesTo:@"Error"];
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            });
+            return;
+        }
+        
+        if (!jsData)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [self setWebViewTextTo:[NSString stringWithFormat:@"<h1>Failed to load graph data due to error: %@</h1>", error.localizedDescription]];
+                [self setAllValuesTo:@"Error"];
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            });
+            return;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            
+            // Make a 'fake' web page and include JS data in it
+            NSString *myHTML = [[@"<html><body><canvas id=\"mc_data\" width=\"1000\" height=\"400\" style=\"border:1px solid; margin: 0px 10px 0px 0px\">Hm no HTML canvas graphics support??</canvas><script type=\"text/javascript\">" stringByAppendingString:jsData] stringByAppendingString:@"</script></html></body>"];
+            [self setWebViewTextTo:myHTML];
+            
+            // Parse the JS data
+            
+            NSString *immatureString = [self extractStringFromHTML:jsData
+                                                        usingRegex:@"Immature:.*?txt=' (.*?) *'" getLast:false];
+            self.immatureLabel.text = [immatureString stringByAppendingString:@" BTC"];
+            
+            NSString *unexchangedString = [self extractStringFromHTML:jsData
+                                                           usingRegex:@"Unexchanged:.*?txt=' (.*?) *'" getLast:false];
+            self.unexchangedLabel.text = [unexchangedString stringByAppendingString:@" BTC"];
+            
+            NSString *balanceString = [self extractStringFromHTML:jsData
+                                                       usingRegex:@"Balance:.*?txt=' (.*?) *'" getLast:false];
+            self.balanceLabel.text = [balanceString stringByAppendingString:@" BTC"];
+            
+            NSString *acceptedString = [self extractStringFromHTML:jsData
+                                                        usingRegex:@"Accepted:.*?txt=' (.*?) *'" getLast:false];
+            self.hashRateLabel.text = acceptedString;
+            
+            NSString *rejectedString = [self extractStringFromHTML:jsData
+                                                        usingRegex:@"Rejected:.*?txt=' (.*?) *'" getLast:false];
+            self.rejectRateLabel.text = rejectedString;
+            
+            NSString *averageHashString = [self extractStringFromHTML:jsData
+                                                           usingRegex:@"Three Hour Moving Average:.*?txt=' (.*?) *'" getLast:false];
+            self.averageRateLabel.text = averageHashString;
+            
+            // Extract update date from graph
+            NSString *updateDateString = [self extractStringFromHTML:jsData
+                                                          usingRegex:@"Latest Values in BTC at (.*?) UTC" getLast:false];
+            self.updateDateLabel.text = [self convertToLocalDateAlt:updateDateString];
+            
+            // Calcualte approximate total unpaid
+            double unpaid = [balanceString doubleValue] + [immatureString doubleValue] + [unexchangedString doubleValue];
+            self.totalUnpaidLabel.text = [NSString stringWithFormat:@"%1.8f BTC", unpaid];
+            
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        });
+    });
     
-    // HTML data successfully loaded. Now do some parsing.
-    
-    // Get Javascript URL
-    NSURL *jsUrl = [NSURL URLWithString:[self extractStringFromHTML:htmlData usingRegex:@".*<script .*\"(http://.*)\"></script>.*" getLast:false]];
-    if (jsUrl == nil)
-    {
-        [self setWebViewTextTo:@"Failed to parse received HTML data."];
-        [self setAllValuesTo:@"N/A"];
-        return;
-    }
-    
-    // Now parse the other stuff on the HTML page (e.g. last payout amount and last update date)
-    
-    self.payoutAddressLabel.text = payoutAddress;
-    // Get last payout amount
-    NSString *lastPayoutAmountString = [self extractStringFromHTML:htmlData
-                                                        usingRegex:@"m.</td>\n<td>(.*)</td>\n</tr>" getLast:true];
-    self.payoutAmountLabel.text = [lastPayoutAmountString stringByAppendingString:@" BTC"];
-
-    NSString *lastPayoutDateString = [self extractStringFromHTML:htmlData
-                                                        usingRegex:@"</td>\n<td>(.*)</td>\n<td>" getLast:true];
-    self.payoutDateLabel.text = [self convertToLocalDate:lastPayoutDateString];
-    
-    if (isPool)
-    {
-        NSString *totalPaidOutString = [self extractStringFromHTML:htmlData
-                                                        usingRegex:@"<td>(.*)</td>\n</tr>" getLast:true];
-        self.totalPaidOutLabel.text = [totalPaidOutString stringByAppendingString:@" BTC"];
-    }
-    else
-    {
-        NSString *totalPaidOutString = [self extractStringFromHTML:htmlData
-                                                    usingRegex:@"<td>(.*)</a></td>\n</tr>" getLast:true];
-        self.totalPaidOutLabel.text = [totalPaidOutString stringByAppendingString:@" BTC"];
-    }
-
-
-    
-    // Now download the javascript data.
-    NSString *jsData = [NSString stringWithContentsOfURL:jsUrl encoding:NSUTF8StringEncoding error:&error];
-    
-    jsData = [jsData stringByReplacingOccurrencesOfString:@"ctx.fillRect(940+1,0,1000,20-4);" withString:@"ctx.clearRect(940+1,0,1000,20-4);"];
-
-    
-    if ([@"" isEqualToString:jsData])
-    {
-        [self setWebViewTextTo:@"<h1>Failed to load graph data.</h1>"];
-        [self setAllValuesTo:@"Error"];
-        return;
-    }
-    
-    if (!jsData)
-    {
-        [self setWebViewTextTo:[NSString stringWithFormat:@"<h1>Failed to load graph data due to error: %@</h1>", error.localizedDescription]];
-        [self setAllValuesTo:@"Error"];
-        return;
-    }
-    
-    // Make a 'fake' web page and include JS data in it
-    NSString *myHTML = [[@"<html><body><canvas id=\"mc_data\" width=\"1000\" height=\"400\" style=\"border:1px solid; margin: 0px 10px 0px 0px\">Hm no HTML canvas graphics support??</canvas><script type=\"text/javascript\">" stringByAppendingString:jsData] stringByAppendingString:@"</script></html></body>"];
-    [self setWebViewTextTo:myHTML];
-    
-    // Parse the JS data
-    
-    NSString *immatureString = [self extractStringFromHTML:jsData
-                                                    usingRegex:@"Immature:.*?txt=' (.*?) *'" getLast:false];
-    self.immatureLabel.text = [immatureString stringByAppendingString:@" BTC"];
-
-    NSString *unexchangedString = [self extractStringFromHTML:jsData
-                                                usingRegex:@"Unexchanged:.*?txt=' (.*?) *'" getLast:false];
-    self.unexchangedLabel.text = [unexchangedString stringByAppendingString:@" BTC"];
-    
-    NSString *balanceString = [self extractStringFromHTML:jsData
-                                                   usingRegex:@"Balance:.*?txt=' (.*?) *'" getLast:false];
-    self.balanceLabel.text = [balanceString stringByAppendingString:@" BTC"];
-    
-    NSString *acceptedString = [self extractStringFromHTML:jsData
-                                               usingRegex:@"Accepted:.*?txt=' (.*?) *'" getLast:false];
-    self.hashRateLabel.text = acceptedString;
-    
-    NSString *rejectedString = [self extractStringFromHTML:jsData
-                                                usingRegex:@"Rejected:.*?txt=' (.*?) *'" getLast:false];
-    self.rejectRateLabel.text = rejectedString;
-
-    NSString *averageHashString = [self extractStringFromHTML:jsData
-                                                usingRegex:@"Three Hour Moving Average:.*?txt=' (.*?) *'" getLast:false];
-    self.averageRateLabel.text = averageHashString;
-    
-    // Extract update date from graph
-    NSString *updateDateString = [self extractStringFromHTML:jsData
-                                                   usingRegex:@"Latest Values in BTC at (.*?) UTC" getLast:false];
-    self.updateDateLabel.text = [self convertToLocalDateAlt:updateDateString];
-    
-    // Calcualte approximate total unpaid
-    double unpaid = [balanceString doubleValue] + [immatureString doubleValue] + [unexchangedString doubleValue];
-    self.totalUnpaidLabel.text = [NSString stringWithFormat:@"%1.8f BTC", unpaid];
 }
 
 -(NSString*) convertToLocalDate:(NSString*)utcDate

@@ -39,7 +39,7 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     self.edgesForExtendedLayout = UIRectEdgeAll;
-    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 49+20, 0);
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 120, 0);
     
     self.addressField.text = [[NSUserDefaults standardUserDefaults] objectForKey:@"userPayoutAddress"];
 }

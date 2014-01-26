@@ -92,7 +92,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <webView opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="r6T-tU-0FK">
+                            <webView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="r6T-tU-0FK">
                                 <rect key="frame" x="0.0" y="64" width="320" height="130"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -271,7 +271,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <webView opaque="NO" contentMode="scaleToFill" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wXY-tx-FCo">
+                            <webView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wXY-tx-FCo">
                                 <rect key="frame" x="0.0" y="64" width="320" height="130"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -599,13 +599,8 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Acknowledgements" footerTitle="This app makes use of icons by TWG.ca, licensed under the Creative Commons Attribution-Share Alike license." id="3hw-27-ghD">
-                                <cells/>
-                            </tableViewSection>
-                            <tableViewSection id="ZzX-Wc-0vG">
-                                <cells/>
-                            </tableViewSection>
-                            <tableViewSection id="TbJ-iz-cKP">
+                            <tableViewSection headerTitle="Acknowledgements" id="3hw-27-ghD">
+                                <string key="footerTitle">This app makes use of icons by TWG.ca, licensed under the Creative Commons Attribution-Share Alike license. Graphs are generated and provided by coinGeek.</string>
                                 <cells/>
                             </tableViewSection>
                         </sections>
