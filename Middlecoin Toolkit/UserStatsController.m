@@ -35,7 +35,13 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     [self setAllValuesTo:@"Loading..."];
-    [self refresh:nil];
+    [self doRefresh:false];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    if ([self.balanceLabel.text isEqualToString:@"Error"])
+        [self refresh:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -50,8 +56,15 @@
 }
 
 - (IBAction)refresh:(id)sender {
+    [self doRefresh:true];
+}
+
+-(void) doRefresh:(Boolean)showNoPayoutMessage
+{
     if ([self isPoolPage])
     {
+        if ([self.balanceLabel.text isEqualToString:@"Error"])
+            [self setAllValuesTo:@"Loading..."];
         [self loadDataFor:nil];
     }
     else
@@ -63,10 +76,13 @@
             [self setWebViewTextTo:@"<h1>No user payout address configured. Configure your payout address in the Settings tab to view user stats.</h1>"];
             [self setAllValuesTo:@"Error"];
             
-            [self showNoPayoutAddressConfiguredError];
+            if (showNoPayoutMessage)
+                [self showNoPayoutAddressConfiguredError];
         }
         else
         {
+            if ([self.balanceLabel.text isEqualToString:@"Error"])
+                [self setAllValuesTo:@"Loading..."];
             [self loadDataFor:address];
         }
     }
