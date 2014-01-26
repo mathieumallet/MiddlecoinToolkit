@@ -15,14 +15,15 @@
 		99A958C4188B1D750074D408 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 99A958C3188B1D750074D408 /* AppDelegate.m */; };
 		99A958C7188B1D750074D408 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99A958C5188B1D750074D408 /* Main_iPhone.storyboard */; };
 		99A958CA188B1D750074D408 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99A958C8188B1D750074D408 /* Main_iPad.storyboard */; };
-		99A958CD188B1D750074D408 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99A958CC188B1D750074D408 /* FirstViewController.m */; };
-		99A958D0188B1D750074D408 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99A958CF188B1D750074D408 /* SecondViewController.m */; };
+		99A958CD188B1D750074D408 /* UserStatsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99A958CC188B1D750074D408 /* UserStatsController.m */; };
 		99A958D2188B1D750074D408 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99A958D1188B1D750074D408 /* Images.xcassets */; };
 		99A958D9188B1D750074D408 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99A958D8188B1D750074D408 /* XCTest.framework */; };
 		99A958DA188B1D750074D408 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99A958B3188B1D750074D408 /* Foundation.framework */; };
 		99A958DB188B1D750074D408 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99A958B7188B1D750074D408 /* UIKit.framework */; };
 		99A958E3188B1D750074D408 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 99A958E1188B1D750074D408 /* InfoPlist.strings */; };
 		99A958E5188B1D750074D408 /* Middlecoin_ToolkitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99A958E4188B1D750074D408 /* Middlecoin_ToolkitTests.m */; };
+		99A958F0188B3BF10074D408 /* SettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99A958EF188B3BF10074D408 /* SettingsController.m */; };
+		99EA99EF18934A6E0094BDE9 /* NewsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EA99EE18934A6E0094BDE9 /* NewsController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		99A958B0188B1D750074D408 /* Middlecoin Toolkit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Middlecoin Toolkit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		99A958B0188B1D750074D408 /* Middlecoin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Middlecoin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		99A958B3188B1D750074D408 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		99A958B5188B1D750074D408 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		99A958B7188B1D750074D408 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -48,16 +49,18 @@
 		99A958C3188B1D750074D408 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		99A958C6188B1D750074D408 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
 		99A958C9188B1D750074D408 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
-		99A958CB188B1D750074D408 /* FirstViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
-		99A958CC188B1D750074D408 /* FirstViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
-		99A958CE188B1D750074D408 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
-		99A958CF188B1D750074D408 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
+		99A958CB188B1D750074D408 /* UserStatsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserStatsController.h; sourceTree = "<group>"; };
+		99A958CC188B1D750074D408 /* UserStatsController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserStatsController.m; sourceTree = "<group>"; };
 		99A958D1188B1D750074D408 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		99A958D7188B1D750074D408 /* Middlecoin ToolkitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Middlecoin ToolkitTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		99A958D8188B1D750074D408 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		99A958E0188B1D750074D408 /* Middlecoin ToolkitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Middlecoin ToolkitTests-Info.plist"; sourceTree = "<group>"; };
 		99A958E2188B1D750074D408 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		99A958E4188B1D750074D408 /* Middlecoin_ToolkitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Middlecoin_ToolkitTests.m; sourceTree = "<group>"; };
+		99A958EE188B3BF10074D408 /* SettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsController.h; sourceTree = "<group>"; };
+		99A958EF188B3BF10074D408 /* SettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsController.m; sourceTree = "<group>"; };
+		99EA99EE18934A6E0094BDE9 /* NewsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsController.m; sourceTree = "<group>"; };
+		99EA99F018934A7E0094BDE9 /* NewsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsController.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,7 +100,7 @@
 		99A958B1188B1D750074D408 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				99A958B0188B1D750074D408 /* Middlecoin Toolkit.app */,
+				99A958B0188B1D750074D408 /* Middlecoin.app */,
 				99A958D7188B1D750074D408 /* Middlecoin ToolkitTests.xctest */,
 			);
 			name = Products;
@@ -117,16 +120,18 @@
 		99A958B9188B1D750074D408 /* Middlecoin Toolkit */ = {
 			isa = PBXGroup;
 			children = (
+				99EA99F018934A7E0094BDE9 /* NewsController.h */,
+				99EA99EE18934A6E0094BDE9 /* NewsController.m */,
 				99A958C2188B1D750074D408 /* AppDelegate.h */,
 				99A958C3188B1D750074D408 /* AppDelegate.m */,
 				99A958C5188B1D750074D408 /* Main_iPhone.storyboard */,
 				99A958C8188B1D750074D408 /* Main_iPad.storyboard */,
-				99A958CB188B1D750074D408 /* FirstViewController.h */,
-				99A958CC188B1D750074D408 /* FirstViewController.m */,
-				99A958CE188B1D750074D408 /* SecondViewController.h */,
-				99A958CF188B1D750074D408 /* SecondViewController.m */,
+				99A958CB188B1D750074D408 /* UserStatsController.h */,
+				99A958CC188B1D750074D408 /* UserStatsController.m */,
 				99A958D1188B1D750074D408 /* Images.xcassets */,
 				99A958BA188B1D750074D408 /* Supporting Files */,
+				99A958EE188B3BF10074D408 /* SettingsController.h */,
+				99A958EF188B3BF10074D408 /* SettingsController.m */,
 			);
 			path = "Middlecoin Toolkit";
 			sourceTree = "<group>";
@@ -163,9 +168,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		99A958AF188B1D750074D408 /* Middlecoin Toolkit */ = {
+		99A958AF188B1D750074D408 /* Middlecoin */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 99A958E8188B1D750074D408 /* Build configuration list for PBXNativeTarget "Middlecoin Toolkit" */;
+			buildConfigurationList = 99A958E8188B1D750074D408 /* Build configuration list for PBXNativeTarget "Middlecoin" */;
 			buildPhases = (
 				99A958AC188B1D750074D408 /* Sources */,
 				99A958AD188B1D750074D408 /* Frameworks */,
@@ -175,9 +180,9 @@
 			);
 			dependencies = (
 			);
-			name = "Middlecoin Toolkit";
+			name = Middlecoin;
 			productName = "Middlecoin Toolkit";
-			productReference = 99A958B0188B1D750074D408 /* Middlecoin Toolkit.app */;
+			productReference = 99A958B0188B1D750074D408 /* Middlecoin.app */;
 			productType = "com.apple.product-type.application";
 		};
 		99A958D6188B1D750074D408 /* Middlecoin ToolkitTests */ = {
@@ -225,7 +230,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				99A958AF188B1D750074D408 /* Middlecoin Toolkit */,
+				99A958AF188B1D750074D408 /* Middlecoin */,
 				99A958D6188B1D750074D408 /* Middlecoin ToolkitTests */,
 			);
 		};
@@ -258,9 +263,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				99A958D0188B1D750074D408 /* SecondViewController.m in Sources */,
 				99A958C4188B1D750074D408 /* AppDelegate.m in Sources */,
-				99A958CD188B1D750074D408 /* FirstViewController.m in Sources */,
+				99A958F0188B3BF10074D408 /* SettingsController.m in Sources */,
+				99A958CD188B1D750074D408 /* UserStatsController.m in Sources */,
+				99EA99EF18934A6E0094BDE9 /* NewsController.m in Sources */,
 				99A958C0188B1D750074D408 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -278,7 +284,7 @@
 /* Begin PBXTargetDependency section */
 		99A958DD188B1D750074D408 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 99A958AF188B1D750074D408 /* Middlecoin Toolkit */;
+			target = 99A958AF188B1D750074D408 /* Middlecoin */;
 			targetProxy = 99A958DC188B1D750074D408 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -398,10 +404,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Middlecoin Toolkit/Middlecoin Toolkit-Prefix.pch";
 				INFOPLIST_FILE = "Middlecoin Toolkit/Middlecoin Toolkit-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -411,10 +419,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Middlecoin Toolkit/Middlecoin Toolkit-Prefix.pch";
 				INFOPLIST_FILE = "Middlecoin Toolkit/Middlecoin Toolkit-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -473,13 +483,14 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		99A958E8188B1D750074D408 /* Build configuration list for PBXNativeTarget "Middlecoin Toolkit" */ = {
+		99A958E8188B1D750074D408 /* Build configuration list for PBXNativeTarget "Middlecoin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				99A958E9188B1D750074D408 /* Debug */,
 				99A958EA188B1D750074D408 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		99A958EB188B1D750074D408 /* Build configuration list for PBXNativeTarget "Middlecoin ToolkitTests" */ = {
 			isa = XCConfigurationList;
@@ -488,6 +499,7 @@
 				99A958ED188B1D750074D408 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -1,4 +1,4 @@
-//
+;//
 //  FirstViewController.h
 //  Middlecoin Toolkit
 //
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FirstViewController : UIViewController
+@interface UserStatsController : UIViewController
 
 @end

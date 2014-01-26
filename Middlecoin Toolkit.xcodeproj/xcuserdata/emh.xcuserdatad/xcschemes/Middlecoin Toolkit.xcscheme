@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "99A958AF188B1D750074D408"
-               BuildableName = "Middlecoin Toolkit.app"
-               BlueprintName = "Middlecoin Toolkit"
+               BuildableName = "Middlecoin.app"
+               BlueprintName = "Middlecoin"
                ReferencedContainer = "container:Middlecoin Toolkit.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -43,8 +43,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "99A958AF188B1D750074D408"
-            BuildableName = "Middlecoin Toolkit.app"
-            BlueprintName = "Middlecoin Toolkit"
+            BuildableName = "Middlecoin.app"
+            BlueprintName = "Middlecoin"
             ReferencedContainer = "container:Middlecoin Toolkit.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -62,8 +62,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "99A958AF188B1D750074D408"
-            BuildableName = "Middlecoin Toolkit.app"
-            BlueprintName = "Middlecoin Toolkit"
+            BuildableName = "Middlecoin.app"
+            BlueprintName = "Middlecoin"
             ReferencedContainer = "container:Middlecoin Toolkit.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -80,8 +80,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "99A958AF188B1D750074D408"
-            BuildableName = "Middlecoin Toolkit.app"
-            BlueprintName = "Middlecoin Toolkit"
+            BuildableName = "Middlecoin.app"
+            BlueprintName = "Middlecoin"
             ReferencedContainer = "container:Middlecoin Toolkit.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
