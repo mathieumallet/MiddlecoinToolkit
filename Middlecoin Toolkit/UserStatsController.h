@@ -9,5 +9,10 @@
 #import <UIKit/UIKit.h>
 
 @interface UserStatsController : UIViewController
+{
+    NSString* payoutAddress;
+}
+
+@property NSString *payoutAddress;
 
 @end

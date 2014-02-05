@@ -7,12 +7,28 @@
 //
 
 #import "AppDelegate.h"
+#import "Miner.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    
+    // Special migration code for going from v1.0 to v1.1
+    NSString *oldPayoutAddress = [[NSUserDefaults standardUserDefaults] valueForKey:@"userPayoutAddress"];
+    if (oldPayoutAddress != nil)
+    {
+        // Migrate payout address to new miners format
+        Miner* miner = [[Miner alloc] init];
+        miner.name = @"Miner";
+        miner.address = oldPayoutAddress;
+        NSArray *array = [NSArray arrayWithObject:miner];
+        [Miner saveMinersToDefaults:array forKey:@"miners"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"userPayoutAddress"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    
     return YES;
 }
 							

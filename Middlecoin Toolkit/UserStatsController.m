@@ -7,8 +7,12 @@
 //
 
 #import "UserStatsController.h"
+#import "Miner.h"
 
 @interface UserStatsController ()
+
+@property UIBarButtonItem* refreshButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *poolRefreshButton;
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 
@@ -29,19 +33,45 @@
 
 @implementation UserStatsController
 
+@synthesize payoutAddress;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+
+    self.refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshPressed)];
+    self.navigationItem.rightBarButtonItem = self.refreshButton;
+}
+
+-(void) viewWillAppear:(BOOL)animated
+{
+    if (payoutAddress == nil)
+    {
+        if ([self.title isEqualToString:@"Pool Stats"])
+            payoutAddress = nil;
+        else
+            payoutAddress = [[NSUserDefaults standardUserDefaults] valueForKey:@"userPayoutAddress"];
+    }
     
     [self setAllValuesTo:@"Loading..."];
-    [self doRefresh:false];
+    [self doRefresh];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     if ([self.balanceLabel.text isEqualToString:@"Error"])
-        [self refresh:nil];
+        [self doRefresh];
+}
+
+- (IBAction)poolRefreshPressed:(id)sender
+{
+    [self doRefresh];
+}
+
+-(void)refreshPressed
+{
+    [self doRefresh];
 }
 
 - (void)didReceiveMemoryWarning
@@ -50,16 +80,28 @@
     // Dispose of any resources that can be recreated.
 }
 
+// an utility function that checks if we're displaying pool stats (if not then we're displaying user stats)
 - (Boolean)isPoolPage
 {
-    return [self.title isEqualToString:@"Pool Stats"];
+    return payoutAddress == nil;
 }
 
-- (IBAction)refresh:(id)sender {
-    [self doRefresh:true];
+-(void)beginRefreshing
+{
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    self.refreshButton.enabled = false;
+    self.poolRefreshButton.enabled = false;
 }
 
--(void) doRefresh:(Boolean)showNoPayoutMessage
+-(void)finishRefreshing
+{
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    self.refreshButton.enabled = true;
+    self.poolRefreshButton.enabled  = true;
+
+}
+
+-(void) doRefresh
 {
     if ([self isPoolPage])
     {
@@ -69,15 +111,12 @@
     }
     else
     {
-        NSString *address = [[NSUserDefaults standardUserDefaults] valueForKey:@"userPayoutAddress"];
+        NSString *address = payoutAddress;
         
-        if (![self isValidAddress:address])
+        if (![Miner isValidAddress:address])
         {
             [self setWebViewTextTo:@"<h1>No user payout address configured. Configure your payout address in the Settings tab to view user stats.</h1>"];
             [self setAllValuesTo:@"Error"];
-            
-            if (showNoPayoutMessage)
-                [self showNoPayoutAddressConfiguredError];
         }
         else
         {
@@ -88,21 +127,7 @@
     }
 }
 
-- (Boolean)isValidAddress:(NSString*)address
-{
-    if (address == nil)
-        return false;
-    //if ([address isEqualToString:@"1"])
-    //    return false;
-    //if ([address isEqualToString:@""])
-    //    return false;
-    if ([address length] != 34)
-        return false;
-    if ([address characterAtIndex:0] != '1')
-        return false;
-    
-    return true;
-}
+
 
 - (void)setWebViewTextTo:(NSString*)text
 {
@@ -117,17 +142,9 @@
     }
     else
     {
-        NSString *address = [[NSUserDefaults standardUserDefaults] valueForKey:@"userPayoutAddress"];
-        if (![self isValidAddress:address])
-        {
-            [self showNoPayoutAddressConfiguredError];
-        }
-        else
-        {
-            NSURL *htmlUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://middlecoin2.s3-website-us-west-2.amazonaws.com/reports/%@.html", address]];
-            [[UIApplication sharedApplication] openURL:htmlUrl];
-        }
-    }
+        NSString *address = payoutAddress;
+        NSURL *htmlUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://middlecoin2.s3-website-us-west-2.amazonaws.com/reports/%@.html", address]];
+        [[UIApplication sharedApplication] openURL:htmlUrl];    }
 }
 
 - (void)showNoPayoutAddressConfiguredError
@@ -136,17 +153,17 @@
     [alert show];
 }
 
-- (void)loadDataFor:(NSString*)payoutAddress
+- (void)loadDataFor:(NSString*)address
 {
     Boolean isPool = [self isPoolPage];
     NSURL *htmlUrl;
     if (isPool)
         htmlUrl = [NSURL URLWithString:@"http://www.middlecoin.com"];
     else
-        htmlUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://middlecoin2.s3-website-us-west-2.amazonaws.com/reports/%@.html", payoutAddress]];
+        htmlUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://middlecoin2.s3-website-us-west-2.amazonaws.com/reports/%@.html", address]];
     //NSLog(@"loading data from %@...", htmlUrl);
     
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    [self beginRefreshing];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
@@ -158,7 +175,7 @@
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [self setWebViewTextTo:[NSString stringWithFormat:@"<h1>Failed to load HTML data due to error: %@</h1>", error.localizedDescription]];
                 [self setAllValuesTo:@"Error"];
-                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+                [self finishRefreshing];
             });
             return;
         }
@@ -172,7 +189,7 @@
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [self setWebViewTextTo:@"Failed to parse received HTML data."];
                 [self setAllValuesTo:@"N/A"];
-                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+                [self finishRefreshing];
             });
             return;
         }
@@ -213,7 +230,7 @@
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [self setWebViewTextTo:@"<h1>Failed to load graph data.</h1>"];
                 [self setAllValuesTo:@"Error"];
-                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+                [self finishRefreshing];
             });
             return;
         }
@@ -223,7 +240,7 @@
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [self setWebViewTextTo:[NSString stringWithFormat:@"<h1>Failed to load graph data due to error: %@</h1>", error.localizedDescription]];
                 [self setAllValuesTo:@"Error"];
-                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+                [self finishRefreshing];
             });
             return;
         }
@@ -269,7 +286,7 @@
             double unpaid = [balanceString doubleValue] + [immatureString doubleValue] + [unexchangedString doubleValue];
             self.totalUnpaidLabel.text = [NSString stringWithFormat:@"%1.8f BTC", unpaid];
             
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            [self finishRefreshing];
         });
     });
     

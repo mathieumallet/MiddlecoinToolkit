@@ -10,9 +10,11 @@
 
 #define DONATE_ADDRESS @"1KxZwnp8GrKFoPZ828Wagg9TSpUhvYEZUF"
 #define TEST_ADDRESS @"1DLkgH9K7dFaT2y2wuUDDvX9EzbSeoraNS"
+#define TEST_RIG_ADDRESS @"http://emh.ottawaengineers.ca:8724/"
 
 @interface SettingsController ()
-@property (weak, nonatomic) IBOutlet UITextField *addressField;
+@property (weak, nonatomic) IBOutlet UITextField *rigAddress;
+
 
 @end
 
@@ -41,7 +43,10 @@
     self.edgesForExtendedLayout = UIRectEdgeAll;
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 120, 0);
     
-    self.addressField.text = [[NSUserDefaults standardUserDefaults] objectForKey:@"userPayoutAddress"];
+    self.rigAddress.text = [[NSUserDefaults standardUserDefaults] objectForKey:@"rigAddress"];
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"moon_background.png"]];
+    [self.tableView  setBackgroundView:imageView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -57,10 +62,10 @@
 }
 
 - (IBAction)addressEditingDidEnd:(id)sender {
-    if ([self.addressField.text isEqualToString:@"test"])
-        self.addressField.text = TEST_ADDRESS;
+    if ([self.rigAddress.text isEqualToString:@"test"])
+        self.rigAddress.text = TEST_RIG_ADDRESS;
     
-    [[NSUserDefaults standardUserDefaults] setObject:self.addressField.text forKey:@"userPayoutAddress"];
+    [[NSUserDefaults standardUserDefaults] setObject:self.rigAddress.text forKey:@"rigAddress"];
 }
 
 - (IBAction)donateUsingWallet:(id)sender {

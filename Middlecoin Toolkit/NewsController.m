@@ -30,9 +30,6 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
 
-    self.edgesForExtendedLayout = UIRectEdgeAll;
-    self.webView.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 49+20, 0);
-    
     self.webView.scrollView.scrollsToTop = true;
     
     UIRefreshControl *refresh = [[UIRefreshControl alloc] init];
@@ -40,6 +37,12 @@
     self.webView.delegate = (id)self;
     [refresh addTarget:self action:@selector(handleRefresh:) forControlEvents:UIControlEventValueChanged];
     [self.webView.scrollView addSubview:refresh];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    self.edgesForExtendedLayout = UIRectEdgeAll;
+    self.webView.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 49+20, 0);
     
     [self.refresh beginRefreshing];
     [self loadTwitterFeed];

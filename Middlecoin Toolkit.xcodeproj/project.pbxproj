@@ -7,6 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		992E593F189EB95000371D39 /* MinersController.m in Sources */ = {isa = PBXBuildFile; fileRef = 992E593E189EB95000371D39 /* MinersController.m */; };
+		992E5942189EC95200371D39 /* Miner.m in Sources */ = {isa = PBXBuildFile; fileRef = 992E5941189EC95200371D39 /* Miner.m */; };
+		992E5948189ECE6F00371D39 /* AddMinerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 992E5947189ECE6F00371D39 /* AddMinerController.m */; };
+		992E594B18A0833300371D39 /* RigStatusController.m in Sources */ = {isa = PBXBuildFile; fileRef = 992E594A18A0833300371D39 /* RigStatusController.m */; };
+		994669A91895E97200938C9C /* 5836482263_53568272a2_o.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 994669991895E97200938C9C /* 5836482263_53568272a2_o.jpg */; };
+		994669AA1895E97200938C9C /* app_background_moon.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9946699A1895E97200938C9C /* app_background_moon.jpg */; };
+		994669AB1895E97200938C9C /* app_background_moon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9946699B1895E97200938C9C /* app_background_moon.png */; };
+		994669AC1895E97200938C9C /* app_background_moon.xcf in Resources */ = {isa = PBXBuildFile; fileRef = 9946699C1895E97200938C9C /* app_background_moon.xcf */; };
+		994669AD1895E97200938C9C /* app_background_moon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9946699D1895E97200938C9C /* app_background_moon@2x.png */; };
+		994669AE1895E97200938C9C /* app_icon.xcf in Resources */ = {isa = PBXBuildFile; fileRef = 9946699E1895E97200938C9C /* app_icon.xcf */; };
+		994669AF1895E97200938C9C /* app_icon2_appstore.png in Resources */ = {isa = PBXBuildFile; fileRef = 9946699F1895E97200938C9C /* app_icon2_appstore.png */; };
+		994669B01895E97200938C9C /* app_icon2_iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A01895E97200938C9C /* app_icon2_iphone.png */; };
+		994669B11895E97200938C9C /* app_icon2_iphone_144.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A11895E97200938C9C /* app_icon2_iphone_144.png */; };
+		994669B21895E97200938C9C /* app_icon2_iphone_57.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A21895E97200938C9C /* app_icon2_iphone_57.png */; };
+		994669B31895E97200938C9C /* app_launch_image.xcf in Resources */ = {isa = PBXBuildFile; fileRef = 994669A31895E97200938C9C /* app_launch_image.xcf */; };
+		994669B41895E97200938C9C /* app_launch_image_iphone_2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A41895E97200938C9C /* app_launch_image_iphone_2x.png */; };
+		994669B51895E97200938C9C /* app_launch_image_iphone_r4.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A51895E97200938C9C /* app_launch_image_iphone_r4.png */; };
+		994669B61895E97200938C9C /* Bitcoin.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A61895E97200938C9C /* Bitcoin.png */; };
+		994669B71895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A71895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png */; };
+		994669B81895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A81895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png */; };
 		99A958B4188B1D750074D408 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99A958B3188B1D750074D408 /* Foundation.framework */; };
 		99A958B6188B1D750074D408 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99A958B5188B1D750074D408 /* CoreGraphics.framework */; };
 		99A958B8188B1D750074D408 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99A958B7188B1D750074D408 /* UIKit.framework */; };
@@ -37,6 +57,30 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		992E593D189EB95000371D39 /* MinersController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MinersController.h; sourceTree = "<group>"; };
+		992E593E189EB95000371D39 /* MinersController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MinersController.m; sourceTree = "<group>"; };
+		992E5940189EC95200371D39 /* Miner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Miner.h; sourceTree = "<group>"; };
+		992E5941189EC95200371D39 /* Miner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Miner.m; sourceTree = "<group>"; };
+		992E5946189ECE6F00371D39 /* AddMinerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddMinerController.h; sourceTree = "<group>"; };
+		992E5947189ECE6F00371D39 /* AddMinerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddMinerController.m; sourceTree = "<group>"; };
+		992E594918A0833300371D39 /* RigStatusController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RigStatusController.h; sourceTree = "<group>"; };
+		992E594A18A0833300371D39 /* RigStatusController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RigStatusController.m; sourceTree = "<group>"; };
+		994669991895E97200938C9C /* 5836482263_53568272a2_o.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 5836482263_53568272a2_o.jpg; sourceTree = "<group>"; };
+		9946699A1895E97200938C9C /* app_background_moon.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = app_background_moon.jpg; sourceTree = "<group>"; };
+		9946699B1895E97200938C9C /* app_background_moon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_background_moon.png; sourceTree = "<group>"; };
+		9946699C1895E97200938C9C /* app_background_moon.xcf */ = {isa = PBXFileReference; lastKnownFileType = file; path = app_background_moon.xcf; sourceTree = "<group>"; };
+		9946699D1895E97200938C9C /* app_background_moon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app_background_moon@2x.png"; sourceTree = "<group>"; };
+		9946699E1895E97200938C9C /* app_icon.xcf */ = {isa = PBXFileReference; lastKnownFileType = file; path = app_icon.xcf; sourceTree = "<group>"; };
+		9946699F1895E97200938C9C /* app_icon2_appstore.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_icon2_appstore.png; sourceTree = "<group>"; };
+		994669A01895E97200938C9C /* app_icon2_iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_icon2_iphone.png; sourceTree = "<group>"; };
+		994669A11895E97200938C9C /* app_icon2_iphone_144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_icon2_iphone_144.png; sourceTree = "<group>"; };
+		994669A21895E97200938C9C /* app_icon2_iphone_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_icon2_iphone_57.png; sourceTree = "<group>"; };
+		994669A31895E97200938C9C /* app_launch_image.xcf */ = {isa = PBXFileReference; lastKnownFileType = file; path = app_launch_image.xcf; sourceTree = "<group>"; };
+		994669A41895E97200938C9C /* app_launch_image_iphone_2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_launch_image_iphone_2x.png; sourceTree = "<group>"; };
+		994669A51895E97200938C9C /* app_launch_image_iphone_r4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_launch_image_iphone_r4.png; sourceTree = "<group>"; };
+		994669A61895E97200938C9C /* Bitcoin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Bitcoin.png; sourceTree = "<group>"; };
+		994669A71895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png"; sourceTree = "<group>"; };
+		994669A81895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png"; sourceTree = "<group>"; };
 		99A958B0188B1D750074D408 /* Middlecoin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Middlecoin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		99A958B3188B1D750074D408 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		99A958B5188B1D750074D408 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -87,9 +131,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		994669981895E97200938C9C /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				994669991895E97200938C9C /* 5836482263_53568272a2_o.jpg */,
+				9946699A1895E97200938C9C /* app_background_moon.jpg */,
+				9946699B1895E97200938C9C /* app_background_moon.png */,
+				9946699C1895E97200938C9C /* app_background_moon.xcf */,
+				9946699D1895E97200938C9C /* app_background_moon@2x.png */,
+				9946699E1895E97200938C9C /* app_icon.xcf */,
+				9946699F1895E97200938C9C /* app_icon2_appstore.png */,
+				994669A01895E97200938C9C /* app_icon2_iphone.png */,
+				994669A11895E97200938C9C /* app_icon2_iphone_144.png */,
+				994669A21895E97200938C9C /* app_icon2_iphone_57.png */,
+				994669A31895E97200938C9C /* app_launch_image.xcf */,
+				994669A41895E97200938C9C /* app_launch_image_iphone_2x.png */,
+				994669A51895E97200938C9C /* app_launch_image_iphone_r4.png */,
+				994669A61895E97200938C9C /* Bitcoin.png */,
+				994669A71895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png */,
+				994669A81895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
 		99A958A7188B1D750074D408 = {
 			isa = PBXGroup;
 			children = (
+				994669981895E97200938C9C /* assets */,
 				99A958B9188B1D750074D408 /* Middlecoin Toolkit */,
 				99A958DE188B1D750074D408 /* Middlecoin ToolkitTests */,
 				99A958B2188B1D750074D408 /* Frameworks */,
@@ -132,6 +200,14 @@
 				99A958BA188B1D750074D408 /* Supporting Files */,
 				99A958EE188B3BF10074D408 /* SettingsController.h */,
 				99A958EF188B3BF10074D408 /* SettingsController.m */,
+				992E593D189EB95000371D39 /* MinersController.h */,
+				992E593E189EB95000371D39 /* MinersController.m */,
+				992E5940189EC95200371D39 /* Miner.h */,
+				992E5941189EC95200371D39 /* Miner.m */,
+				992E5946189ECE6F00371D39 /* AddMinerController.h */,
+				992E5947189ECE6F00371D39 /* AddMinerController.m */,
+				992E594918A0833300371D39 /* RigStatusController.h */,
+				992E594A18A0833300371D39 /* RigStatusController.m */,
 			);
 			path = "Middlecoin Toolkit";
 			sourceTree = "<group>";
@@ -244,9 +320,25 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				994669B71895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png in Resources */,
+				994669B01895E97200938C9C /* app_icon2_iphone.png in Resources */,
+				994669B11895E97200938C9C /* app_icon2_iphone_144.png in Resources */,
+				994669B61895E97200938C9C /* Bitcoin.png in Resources */,
+				994669B81895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png in Resources */,
+				994669B21895E97200938C9C /* app_icon2_iphone_57.png in Resources */,
+				994669AB1895E97200938C9C /* app_background_moon.png in Resources */,
+				994669AA1895E97200938C9C /* app_background_moon.jpg in Resources */,
+				994669B51895E97200938C9C /* app_launch_image_iphone_r4.png in Resources */,
 				99A958CA188B1D750074D408 /* Main_iPad.storyboard in Resources */,
+				994669A91895E97200938C9C /* 5836482263_53568272a2_o.jpg in Resources */,
 				99A958D2188B1D750074D408 /* Images.xcassets in Resources */,
+				994669B31895E97200938C9C /* app_launch_image.xcf in Resources */,
+				994669B41895E97200938C9C /* app_launch_image_iphone_2x.png in Resources */,
 				99A958C7188B1D750074D408 /* Main_iPhone.storyboard in Resources */,
+				994669AE1895E97200938C9C /* app_icon.xcf in Resources */,
+				994669AC1895E97200938C9C /* app_background_moon.xcf in Resources */,
+				994669AF1895E97200938C9C /* app_icon2_appstore.png in Resources */,
+				994669AD1895E97200938C9C /* app_background_moon@2x.png in Resources */,
 				99A958BE188B1D750074D408 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,11 +358,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				992E594B18A0833300371D39 /* RigStatusController.m in Sources */,
 				99A958C4188B1D750074D408 /* AppDelegate.m in Sources */,
 				99A958F0188B3BF10074D408 /* SettingsController.m in Sources */,
 				99A958CD188B1D750074D408 /* UserStatsController.m in Sources */,
+				992E593F189EB95000371D39 /* MinersController.m in Sources */,
 				99EA99EF18934A6E0094BDE9 /* NewsController.m in Sources */,
+				992E5942189EC95200371D39 /* Miner.m in Sources */,
 				99A958C0188B1D750074D408 /* main.m in Sources */,
+				992E5948189ECE6F00371D39 /* AddMinerController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
