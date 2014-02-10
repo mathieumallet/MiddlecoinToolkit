@@ -11,6 +11,15 @@
 		992E5942189EC95200371D39 /* Miner.m in Sources */ = {isa = PBXBuildFile; fileRef = 992E5941189EC95200371D39 /* Miner.m */; };
 		992E5948189ECE6F00371D39 /* AddMinerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 992E5947189ECE6F00371D39 /* AddMinerController.m */; };
 		992E594B18A0833300371D39 /* RigStatusController.m in Sources */ = {isa = PBXBuildFile; fileRef = 992E594A18A0833300371D39 /* RigStatusController.m */; };
+		992E594E18A1D45D00371D39 /* StatsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 992E594D18A1D45D00371D39 /* StatsController.m */; };
+		992E595B18A6FAF000371D39 /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 992E595218A6FAF000371D39 /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png */; };
+		992E595C18A6FAF000371D39 /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 992E595318A6FAF000371D39 /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png */; };
+		992E595D18A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.19 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 992E595518A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.19 PM.png */; };
+		992E595E18A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.27 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 992E595618A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.27 PM.png */; };
+		992E595F18A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.35 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 992E595718A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.35 PM.png */; };
+		992E596018A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.35 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 992E595818A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.35 PM.png */; };
+		992E596118A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.40 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 992E595918A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.40 PM.png */; };
+		992E596218A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.45 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 992E595A18A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.45 PM.png */; };
 		994669A91895E97200938C9C /* 5836482263_53568272a2_o.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 994669991895E97200938C9C /* 5836482263_53568272a2_o.jpg */; };
 		994669AA1895E97200938C9C /* app_background_moon.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9946699A1895E97200938C9C /* app_background_moon.jpg */; };
 		994669AB1895E97200938C9C /* app_background_moon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9946699B1895E97200938C9C /* app_background_moon.png */; };
@@ -25,8 +34,6 @@
 		994669B41895E97200938C9C /* app_launch_image_iphone_2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A41895E97200938C9C /* app_launch_image_iphone_2x.png */; };
 		994669B51895E97200938C9C /* app_launch_image_iphone_r4.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A51895E97200938C9C /* app_launch_image_iphone_r4.png */; };
 		994669B61895E97200938C9C /* Bitcoin.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A61895E97200938C9C /* Bitcoin.png */; };
-		994669B71895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A71895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png */; };
-		994669B81895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 994669A81895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png */; };
 		99A958B4188B1D750074D408 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99A958B3188B1D750074D408 /* Foundation.framework */; };
 		99A958B6188B1D750074D408 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99A958B5188B1D750074D408 /* CoreGraphics.framework */; };
 		99A958B8188B1D750074D408 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99A958B7188B1D750074D408 /* UIKit.framework */; };
@@ -65,6 +72,17 @@
 		992E5947189ECE6F00371D39 /* AddMinerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddMinerController.m; sourceTree = "<group>"; };
 		992E594918A0833300371D39 /* RigStatusController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RigStatusController.h; sourceTree = "<group>"; };
 		992E594A18A0833300371D39 /* RigStatusController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RigStatusController.m; sourceTree = "<group>"; };
+		992E594C18A1D45D00371D39 /* StatsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatsController.h; sourceTree = "<group>"; };
+		992E594D18A1D45D00371D39 /* StatsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatsController.m; sourceTree = "<group>"; };
+		992E594F18A45F0800371D39 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		992E595218A6FAF000371D39 /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png"; sourceTree = "<group>"; };
+		992E595318A6FAF000371D39 /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png"; sourceTree = "<group>"; };
+		992E595518A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.19 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Feb 8, 2014, 6.46.19 PM.png"; sourceTree = "<group>"; };
+		992E595618A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.27 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Feb 8, 2014, 6.46.27 PM.png"; sourceTree = "<group>"; };
+		992E595718A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.35 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Feb 8, 2014, 6.46.35 PM.png"; sourceTree = "<group>"; };
+		992E595818A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.35 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Feb 8, 2014, 6.47.35 PM.png"; sourceTree = "<group>"; };
+		992E595918A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.40 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Feb 8, 2014, 6.47.40 PM.png"; sourceTree = "<group>"; };
+		992E595A18A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.45 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Feb 8, 2014, 6.47.45 PM.png"; sourceTree = "<group>"; };
 		994669991895E97200938C9C /* 5836482263_53568272a2_o.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 5836482263_53568272a2_o.jpg; sourceTree = "<group>"; };
 		9946699A1895E97200938C9C /* app_background_moon.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = app_background_moon.jpg; sourceTree = "<group>"; };
 		9946699B1895E97200938C9C /* app_background_moon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_background_moon.png; sourceTree = "<group>"; };
@@ -79,8 +97,6 @@
 		994669A41895E97200938C9C /* app_launch_image_iphone_2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_launch_image_iphone_2x.png; sourceTree = "<group>"; };
 		994669A51895E97200938C9C /* app_launch_image_iphone_r4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_launch_image_iphone_r4.png; sourceTree = "<group>"; };
 		994669A61895E97200938C9C /* Bitcoin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Bitcoin.png; sourceTree = "<group>"; };
-		994669A71895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png"; sourceTree = "<group>"; };
-		994669A81895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png"; sourceTree = "<group>"; };
 		99A958B0188B1D750074D408 /* Middlecoin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Middlecoin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		99A958B3188B1D750074D408 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		99A958B5188B1D750074D408 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -131,9 +147,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		992E595018A6FAF000371D39 /* screenshots */ = {
+			isa = PBXGroup;
+			children = (
+				992E595118A6FAF000371D39 /* v1.0 */,
+				992E595418A6FAF000371D39 /* v1.1 */,
+			);
+			path = screenshots;
+			sourceTree = "<group>";
+		};
+		992E595118A6FAF000371D39 /* v1.0 */ = {
+			isa = PBXGroup;
+			children = (
+				992E595218A6FAF000371D39 /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png */,
+				992E595318A6FAF000371D39 /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png */,
+			);
+			path = v1.0;
+			sourceTree = "<group>";
+		};
+		992E595418A6FAF000371D39 /* v1.1 */ = {
+			isa = PBXGroup;
+			children = (
+				992E595518A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.19 PM.png */,
+				992E595618A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.27 PM.png */,
+				992E595718A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.35 PM.png */,
+				992E595818A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.35 PM.png */,
+				992E595918A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.40 PM.png */,
+				992E595A18A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.45 PM.png */,
+			);
+			path = v1.1;
+			sourceTree = "<group>";
+		};
 		994669981895E97200938C9C /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				992E595018A6FAF000371D39 /* screenshots */,
 				994669991895E97200938C9C /* 5836482263_53568272a2_o.jpg */,
 				9946699A1895E97200938C9C /* app_background_moon.jpg */,
 				9946699B1895E97200938C9C /* app_background_moon.png */,
@@ -148,8 +196,6 @@
 				994669A41895E97200938C9C /* app_launch_image_iphone_2x.png */,
 				994669A51895E97200938C9C /* app_launch_image_iphone_r4.png */,
 				994669A61895E97200938C9C /* Bitcoin.png */,
-				994669A71895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png */,
-				994669A81895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png */,
 			);
 			path = assets;
 			sourceTree = "<group>";
@@ -208,6 +254,9 @@
 				992E5947189ECE6F00371D39 /* AddMinerController.m */,
 				992E594918A0833300371D39 /* RigStatusController.h */,
 				992E594A18A0833300371D39 /* RigStatusController.m */,
+				992E594C18A1D45D00371D39 /* StatsController.h */,
+				992E594D18A1D45D00371D39 /* StatsController.m */,
+				992E594F18A45F0800371D39 /* Constants.h */,
 			);
 			path = "Middlecoin Toolkit";
 			sourceTree = "<group>";
@@ -320,18 +369,22 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				994669B71895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png in Resources */,
+				992E595B18A6FAF000371D39 /* iOS Simulator Screen shot Jan 25, 2014, 11.00.26 PM.png in Resources */,
 				994669B01895E97200938C9C /* app_icon2_iphone.png in Resources */,
 				994669B11895E97200938C9C /* app_icon2_iphone_144.png in Resources */,
 				994669B61895E97200938C9C /* Bitcoin.png in Resources */,
-				994669B81895E97200938C9C /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png in Resources */,
+				992E596218A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.45 PM.png in Resources */,
+				992E595C18A6FAF000371D39 /* iOS Simulator Screen shot Jan 25, 2014, 11.12.39 PM.png in Resources */,
 				994669B21895E97200938C9C /* app_icon2_iphone_57.png in Resources */,
 				994669AB1895E97200938C9C /* app_background_moon.png in Resources */,
 				994669AA1895E97200938C9C /* app_background_moon.jpg in Resources */,
 				994669B51895E97200938C9C /* app_launch_image_iphone_r4.png in Resources */,
 				99A958CA188B1D750074D408 /* Main_iPad.storyboard in Resources */,
+				992E595D18A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.19 PM.png in Resources */,
+				992E595E18A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.27 PM.png in Resources */,
 				994669A91895E97200938C9C /* 5836482263_53568272a2_o.jpg in Resources */,
 				99A958D2188B1D750074D408 /* Images.xcassets in Resources */,
+				992E596118A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.40 PM.png in Resources */,
 				994669B31895E97200938C9C /* app_launch_image.xcf in Resources */,
 				994669B41895E97200938C9C /* app_launch_image_iphone_2x.png in Resources */,
 				99A958C7188B1D750074D408 /* Main_iPhone.storyboard in Resources */,
@@ -340,6 +393,8 @@
 				994669AF1895E97200938C9C /* app_icon2_appstore.png in Resources */,
 				994669AD1895E97200938C9C /* app_background_moon@2x.png in Resources */,
 				99A958BE188B1D750074D408 /* InfoPlist.strings in Resources */,
+				992E595F18A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.46.35 PM.png in Resources */,
+				992E596018A6FAF000371D39 /* iOS Simulator Screen shot Feb 8, 2014, 6.47.35 PM.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,6 +420,7 @@
 				992E593F189EB95000371D39 /* MinersController.m in Sources */,
 				99EA99EF18934A6E0094BDE9 /* NewsController.m in Sources */,
 				992E5942189EC95200371D39 /* Miner.m in Sources */,
+				992E594E18A1D45D00371D39 /* StatsController.m in Sources */,
 				99A958C0188B1D750074D408 /* main.m in Sources */,
 				992E5948189ECE6F00371D39 /* AddMinerController.m in Sources */,
 			);
@@ -503,7 +559,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Mathieu Mallet (VDZGG2GE28)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Middlecoin Toolkit/Middlecoin Toolkit-Prefix.pch";
@@ -521,8 +577,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Mathieu Mallet (VDZGG2GE28)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Middlecoin Toolkit/Middlecoin Toolkit-Prefix.pch";
 				INFOPLIST_FILE = "Middlecoin Toolkit/Middlecoin Toolkit-Info.plist";

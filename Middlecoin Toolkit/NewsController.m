@@ -7,6 +7,7 @@
 //
 
 #import "NewsController.h"
+#import "StatsController.h"
 
 @interface NewsController ()
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
@@ -41,8 +42,14 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
+    
     self.edgesForExtendedLayout = UIRectEdgeAll;
-    self.webView.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 49+20, 0);
+    float headerSize = 20; // status bar height
+    if (self.navigationController && self.navigationController.navigationBarHidden == NO)
+        headerSize += self.navigationController.toolbar.frame.size.height;
+    float tabBarSize = 49;
+    self.webView.scrollView.contentInset = UIEdgeInsetsMake(headerSize, 0, tabBarSize, 0);
     
     [self.refresh beginRefreshing];
     [self loadTwitterFeed];
@@ -67,17 +74,27 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)openFeedInSafari:(id)sender {
+- (IBAction)openFeedInSafari:(id)sender
+{
      [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://twitter.com/middlecoinpool"]];
 }
 
-- (IBAction)refresh:(id)sender {
+- (IBAction)refresh:(id)sender
+{
     [self.webView reload];
 }
 
 -(void)webViewDidFinishLoad:(UIWebView *)webView
 {
     [self.refresh endRefreshing];
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+    [self.refresh endRefreshing];
+    
+    NSString* text = [NSString stringWithFormat:@"An error occurred while loading the pool news page. The received error was: %@", error.localizedDescription];
+    [StatsController setCenteredTextInWebview:self.webView toText:text];
 }
 
 @end

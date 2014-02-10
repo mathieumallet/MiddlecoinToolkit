@@ -7,13 +7,11 @@
 //
 
 #import "SettingsController.h"
-
-#define DONATE_ADDRESS @"1KxZwnp8GrKFoPZ828Wagg9TSpUhvYEZUF"
-#define TEST_ADDRESS @"1DLkgH9K7dFaT2y2wuUDDvX9EzbSeoraNS"
-#define TEST_RIG_ADDRESS @"http://emh.ottawaengineers.ca:8724/"
+#import "Constants.h"
 
 @interface SettingsController ()
 @property (weak, nonatomic) IBOutlet UITextField *rigAddress;
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
 
 
 @end
@@ -41,12 +39,24 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     self.edgesForExtendedLayout = UIRectEdgeAll;
-    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 120, 0);
+    //self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 120, 0);
     
     self.rigAddress.text = [[NSUserDefaults standardUserDefaults] objectForKey:@"rigAddress"];
     
     UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"moon_background.png"]];
     [self.tableView  setBackgroundView:imageView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    self.edgesForExtendedLayout = UIRectEdgeAll;
+    float headerSize = 20; // status bar height
+    if (self.navigationController && self.navigationController.navigationBarHidden == NO)
+        headerSize += self.navigationController.toolbar.frame.size.height;
+    float tabBarSize = 49;
+    self.tableView.contentInset = UIEdgeInsetsMake(headerSize, 0, tabBarSize, 0);
 }
 
 - (void)didReceiveMemoryWarning

@@ -7,9 +7,7 @@
 //
 
 #import "AddMinerController.h"
-
-#define TEST_ADDRESS @"1DLkgH9K7dFaT2y2wuUDDvX9EzbSeoraNS"
-#define TEST_ADDRESS2 @"17MyQX9derjSHcveyXPYrSRra67DmWtRfy";
+#import "Constants.h"
 
 @interface AddMinerController ()
 @property (weak, nonatomic) IBOutlet UITextField *minerName;
@@ -45,6 +43,8 @@
         self.minerAddress.text = TEST_ADDRESS;
     if ([self.minerAddress.text isEqualToString:@"test2"])
         self.minerAddress.text = TEST_ADDRESS2;
+    if ([self.minerAddress.text isEqualToString:@"test3"])
+        self.minerAddress.text = TEST_ADDRESS3;
 }
 
 - (IBAction)addMiner:(id)sender {
@@ -53,9 +53,11 @@
         address = TEST_ADDRESS;
     if ([address isEqualToString:@"test2"])
         address = TEST_ADDRESS2;
+    if ([address isEqualToString:@"test3"])
+        address = TEST_ADDRESS3;
     if (![Miner isValidAddress:address])
     {
-        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:nil message:@"A valid 34-character payout address must be entered." delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:nil message:@"A valid 34-character worker address must be entered." delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
         [alert show];
         return;
     }

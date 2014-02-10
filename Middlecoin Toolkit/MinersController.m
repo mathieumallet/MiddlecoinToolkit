@@ -40,18 +40,29 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
+    
     [self loadMinersFromDefaults];
-    [self setEditing:false animated:false];
+    //[self setEditing:false animated:false];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    if (miners.count == 0)
+        [self performSegueWithIdentifier:@"AddMiner" sender:self];
 }
 
 -(void)viewDidDisappear:(BOOL)animated
 {
-    [self setEditing:false animated:false];
+    //[self setEditing:false animated:false];
 }
 
 -(void) loadMinersFromDefaults
 {
     miners = [NSMutableArray arrayWithArray:[Miner loadMinersFromDefaultsForKey:@"miners"]];
+    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning
@@ -87,11 +98,16 @@
         Miner* miner = [miners objectAtIndex:indexPath.row];
         cell.textLabel.text = miner.name;
         cell.detailTextLabel.text = miner.address;
+        if (self.editing)
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        else
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     }
     else
     {
         cell.detailTextLabel.text = nil;
         cell.textLabel.text = @"Add new Miner...";
+        cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         /*if (self.editing && indexPath.row == miners.count)
             cell.editingAccessoryType =UITableViewCellAccessoryDisclosureIndicator;*/
     }
@@ -99,8 +115,10 @@
     return cell;
 }
 
--(void)setEditing:(BOOL)editing animated:(BOOL) animated {
+-(void)setEditing:(BOOL)editing animated:(BOOL) animated
+{
     [super setEditing:editing animated:animated];
+    
     [self.tableView setEditing:editing animated:animated];
     [self.tableView reloadData];
 }
@@ -125,7 +143,7 @@
     }
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        [self setEditing:false animated:false];
+        //[self setEditing:false animated:false];
         [self performSegueWithIdentifier:@"AddMiner" sender:self];
     }   
 }
@@ -133,7 +151,7 @@
 // Override to support rearranging the table view.
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
-    NSLog(@"move row from %d to %d", fromIndexPath.row, toIndexPath.row);
+    //NSLog(@"move row from %d to %d", fromIndexPath.row, toIndexPath.row);
     
     // Update miners array
     id old = [miners objectAtIndex:fromIndexPath.row];
@@ -174,6 +192,27 @@
 
 #pragma mark - Navigation
 
+- (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
+{
+    if ([identifier isEqualToString:@"StatsSegue"])
+    {
+        if (!self.editing)
+            return true;
+        
+        UITableViewCell* cell = sender;
+        if (cell.detailTextLabel.text != nil)
+        {
+            cell.selected = false;
+            return false;
+        }
+        
+        [self performSegueWithIdentifier:@"AddMiner" sender:self];
+        return false;
+    }
+    
+    return true;
+}
+
 // In a story board-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
@@ -181,6 +220,7 @@
     // Pass the selected object to the new view controller.
     if ([[segue identifier] isEqualToString:@"StatsSegue"])
     {
+        // Special case: when editing, send to 'add miner' page instead
         UserStatsController* newController = [segue destinationViewController];
         
         UITableViewCell* cell = sender;
