@@ -376,7 +376,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="roa-3W-3Fw" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1602" y="2272"/>
+            <point key="canvasLocation" x="1127" y="553"/>
         </scene>
         <!--Miners Controller - Users Statistics-->
         <scene sceneID="Q4M-qF-q7O">
@@ -411,7 +411,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="r6z-Wf-Q3g" kind="push" identifier="StatsSegue" id="z2F-ca-knd"/>
+                                    <segue destination="9km-Vd-XTP" kind="push" identifier="StatsSegue" id="X51-ed-sg6"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -1122,7 +1122,7 @@ Values in native currencies are calculated using the current exchange rate, and 
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="teC-7S-WJ3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="641" y="4026"/>
+            <point key="canvasLocation" x="1642" y="2638"/>
         </scene>
         <!--Add Miner Controller - Add Miner-->
         <scene sceneID="1jj-gs-ETO">
@@ -1185,7 +1185,7 @@ Values in native currencies are calculated using the current exchange rate, and 
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OM7-yr-X8b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1602" y="2937"/>
+            <point key="canvasLocation" x="1642" y="1932"/>
         </scene>
         <!--Navigation Controller - User Stats-->
         <scene sceneID="YbI-tM-q3I">

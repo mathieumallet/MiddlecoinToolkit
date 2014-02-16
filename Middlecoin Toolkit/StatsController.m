@@ -283,7 +283,7 @@
         if (isPool)
             htmlURL = [NSURL URLWithString:@"http://www.middlecoin.com"];
         else
-            htmlURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://middlecoin2.s3-website-us-west-2.amazonaws.com/reports/%@.html", self.payoutAddress]];
+            htmlURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.middlecoin.com/reports/%@.html", self.payoutAddress]];
         
         NSString *htmlData = [NSString stringWithContentsOfURL:htmlURL encoding:NSUTF8StringEncoding error:&error];
         

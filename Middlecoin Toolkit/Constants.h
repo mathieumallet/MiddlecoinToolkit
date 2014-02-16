@@ -22,8 +22,8 @@
 
 #define RATES_URL @"https://blockchain.info/ticker"
 
-#define BITCOIN_SYMBOL @"฿"
-//#define BITCOIN_SYMBOL @"Ƀ"
+//#define BITCOIN_SYMBOL @"฿"
+#define BITCOIN_SYMBOL @"Ƀ"
 
 #define AUTO_REFRESH_INTERVAL (60 * 10)
 
