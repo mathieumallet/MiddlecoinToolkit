@@ -160,7 +160,7 @@
     if (isPool)
         htmlUrl = [NSURL URLWithString:@"http://www.middlecoin.com"];
     else
-        htmlUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://middlecoin2.s3-website-us-west-2.amazonaws.com/reports/%@.html", address]];
+        htmlUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.middlecoin.com/reports/%@.html", address]];
     //NSLog(@"loading data from %@...", htmlUrl);
     
     [self beginRefreshing];
@@ -274,7 +274,7 @@
             self.rejectRateLabel.text = rejectedString;
             
             NSString *averageHashString = [self extractStringFromHTML:jsData
-                                                           usingRegex:@"Three Hour Moving Average:.*?txt=' (.*?) *'" getLast:false];
+                                                           usingRegex:@"Six Hour Moving Average:.*?txt=' (.*?) *'" getLast:false];
             self.averageRateLabel.text = averageHashString;
             
             // Extract update date from graph
