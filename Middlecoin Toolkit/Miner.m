@@ -32,6 +32,8 @@
 +(NSArray*)loadMinersFromDefaultsForKey:(NSString*) key
 {
     NSData* data = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    if (!data)
+        return [NSArray arrayWithObjects:nil];
     return [NSKeyedUnarchiver unarchiveObjectWithData:data];
 }
 

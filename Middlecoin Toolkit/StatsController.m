@@ -19,14 +19,16 @@
 @property CGPoint scrollPosition;
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
-@property NSString *payoutAddress;
+@property NSString* payoutAddress;
+@property NSString* currency;
 
 
 @property (weak, nonatomic) IBOutlet UILabel *summaryBalance;
 @property (weak, nonatomic) IBOutlet UILabel *summaryPayoutForecast;
-@property (weak, nonatomic) IBOutlet UILabel *summaryAcceptReject;
+@property (weak, nonatomic) IBOutlet UILabel *summaryCurrentPerMHs;
 @property (weak, nonatomic) IBOutlet UILabel *summaryExchangeRateLabel;
 @property (weak, nonatomic) IBOutlet UILabel *summaryExchangeRate;
+@property (weak, nonatomic) IBOutlet UILabel *summaryAcceptReject;
 
 @property (weak, nonatomic) IBOutlet UILabel *currentBalance;
 @property (weak, nonatomic) IBOutlet UILabel *currentUnexchanged;
@@ -42,6 +44,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *recentPayoutAmount;
 @property (weak, nonatomic) IBOutlet UILabel *recentNextPayoutIn;
 @property (weak, nonatomic) IBOutlet UILabel *recentNextForecastAmount;
+@property (weak, nonatomic) IBOutlet UILabel *recentCurrentPerMHs;
 
 @property (weak, nonatomic) IBOutlet UILabel *sevenAverage;
 @property (weak, nonatomic) IBOutlet UILabel *sevenStdev;
@@ -98,6 +101,7 @@
     self.scrollView.scrollsToTop = true;
     
     /*self.refreshControl = [[UIRefreshControl alloc] init];
+    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to refresh"];
     self.scrollView.delegate = (id)self;
     [self.refreshControl addTarget:self action:@selector(refreshControlTriggered:) forControlEvents:UIControlEventValueChanged];
     [self.scrollView addSubview:self.refreshControl];*/
@@ -106,12 +110,32 @@
     self.navigationItem.rightBarButtonItem = self.refreshButton;
     
     [self setCenteredTextInWebviewTo:@"Loading data, please wait..."];
-    [self setAllLabelsTo:@"Loading..." withErrorMode:false];
+    [self setAllLabelsTo:@"Loading..." withErrorMode:false];    
+    
+    // Set initial value for exchange rate labels (only when first loading)
+    self.currency = [[NSUserDefaults standardUserDefaults] valueForKey:@"currency"];
+    if (self.currency == nil)
+        self.currency = @"USD";
+    if ([self.currency isEqualToString:@""])
+    {
+        // 'None' selected
+        self.summaryExchangeRateLabel.text = @"Exchange rate";
+    }
+    else
+    {
+        self.summaryExchangeRateLabel.text = [@"BTC/" stringByAppendingFormat:@"%@ rate", self.currency];
+    }
+    self.miscExchangeRateLabel.text = self.summaryExchangeRateLabel.text;
 }
 
 -(void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    // Read currency and update currency labels
+    self.currency = [[NSUserDefaults standardUserDefaults] valueForKey:@"currency"];
+    if (self.currency == nil)
+        self.currency = @"USD";
     
     if (lastRefreshDate == nil || [lastRefreshDate timeIntervalSinceNow] < -AUTO_REFRESH_INTERVAL)
         [self tryRefresh];
@@ -151,7 +175,7 @@
 
 -(NSArray*)getAllLabels
 {
-    return [NSArray arrayWithObjects:self.summaryBalance, self.summaryPayoutForecast, self.summaryAcceptReject, self.summaryExchangeRate,self.currentBalance, self.currentUnexchanged, self.currentImmature, self.currentTotal, self.hashAccepted, self.hashRejected, self.hashRatio, self.hashAverage, self.recentPayoutDate, self.recentPayoutAmount, self.recentNextPayoutIn, self.recentNextForecastAmount,self.sevenAverage, self.sevenStdev, self.sevenMin, self.sevenMax, self.sevenPerMHs, self.sevenTotal, self.thirtySmartAverage, self.thirtyTrueAverage, self.thirtyStdev, self.thirtyMin, self.thirtyMax, self.thirtyPerMHs, self.thirtyTotal,self.allAverage, self.allStdev, self.allMin, self.allMax, self.allPerMHs, self.allTotal, self.miscLastDataUpdate, self.miscLastAppRefresh, self.miscSizeOfLastUpdate, self.miscExchangeRate, self.miscAddress,
+    return [NSArray arrayWithObjects:self.summaryBalance, self.summaryPayoutForecast, self.summaryAcceptReject, self.summaryExchangeRate,self.currentBalance, self.currentUnexchanged, self.currentImmature, self.currentTotal, self.hashAccepted, self.hashRejected, self.hashRatio, self.hashAverage, self.recentPayoutDate, self.recentPayoutAmount, self.recentNextPayoutIn, self.recentNextForecastAmount,self.sevenAverage, self.sevenStdev, self.sevenMin, self.sevenMax, self.sevenPerMHs, self.sevenTotal, self.thirtySmartAverage, self.thirtyTrueAverage, self.thirtyStdev, self.thirtyMin, self.thirtyMax, self.thirtyPerMHs, self.thirtyTotal,self.allAverage, self.allStdev, self.allMin, self.allMax, self.allPerMHs, self.allTotal, self.miscLastDataUpdate, self.miscLastAppRefresh, self.miscSizeOfLastUpdate, self.miscExchangeRate, self.miscAddress, self.summaryCurrentPerMHs, self.recentCurrentPerMHs,
             nil];
 }
 
@@ -229,61 +253,83 @@
     {
         
         // Start by loading the blockchain.info data (for exchange rates)
-        NSString* currency = @"CAD"; // TODO replace by value from settings
         NSURL* marketDataURL = [NSURL URLWithString:RATES_URL];
         
-        NSError *error = nil;
-        NSString *marketData = [NSString stringWithContentsOfURL:marketDataURL encoding:NSUTF8StringEncoding error:&error];
-        
-        if (!marketData)
-        {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                [self setCenteredTextInWebviewTo:[NSString stringWithFormat:@"Failed to load HTML data for exchange rate due to error: %@", error.localizedDescription]];
-                [self setAllLabelsTo:@"Error" withErrorMode:true];
-                [self finishRefreshing];
-            });
-            return;
-        }
-        
-        // Parse exchange rate
-        NSDictionary *marketDataDict = [NSJSONSerialization JSONObjectWithData:[ marketData dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
-        NSString* exchangeRateString = @"???";
-        double exchangeRate = -1;
         NSString* symbol = @"???";
-        if (marketDataDict == nil || error != nil)
+        double exchangeRate = -1.0;
+        NSString* exchangeRateString = @"N/A";
+        
+        NSError *error = nil;
+        if ([self.currency isEqualToString:@""])
         {
-            self.summaryExchangeRate.text = @"Error loading";
-            self.miscExchangeRate.text = @"Error loading";
+            exchangeRateString = @"No currency selected";
         }
         else
         {
-            NSDictionary* data = [marketDataDict valueForKey:currency];
-            if (data == nil)
+            NSString *marketData = [NSString stringWithContentsOfURL:marketDataURL encoding:NSUTF8StringEncoding error:&error];
+            if (marketData)
             {
-                self.summaryExchangeRate.text = @"Error loading";
-                self.miscExchangeRate.text = @"Error loading";
+                // Parse exchange rate
+                NSDictionary *marketDataDict = [NSJSONSerialization JSONObjectWithData:[marketData dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
+                if (marketDataDict == nil || error != nil)
+                {
+                    exchangeRateString = @"Error parsing data";
+                }
+                else
+                {
+                    NSDictionary* data = [marketDataDict valueForKey:self.currency];
+                    if (data == nil)
+                    {
+                        exchangeRateString = @"Error locating data";
+                    }
+                    else
+                    {
+                        exchangeRate = [[data valueForKey:@"15m"] doubleValue];
+                        exchangeRateString = [StatsController formatExchangeRate:exchangeRate];
+                        symbol = [data valueForKey:@"symbol"];
+                    }
+                }
             }
             else
             {
-                exchangeRate = [[data valueForKey:@"15m"] doubleValue];
-                exchangeRateString = [StatsController formatExchangeRate:exchangeRate];
-                symbol = [data valueForKey:@"symbol"];
+                exchangeRateString = @"Error loading data";
             }
         }
-
+        
         dispatch_async(dispatch_get_main_queue(), ^(void) {
+            UIColor* textColor;
+            if (exchangeRate <= 0)
+                textColor = [UIColor redColor];
+            else
+                textColor = [UIColor blackColor];
+            
+            if ([self.currency isEqualToString:@""])
+            {
+                // 'None' selected
+                self.summaryExchangeRateLabel.text = @"Exchange rate";
+            }
+            else
+            {
+                self.summaryExchangeRateLabel.text = [@"BTC/" stringByAppendingFormat:@"%@ rate", self.currency];
+            }
+            self.miscExchangeRateLabel.text = self.summaryExchangeRateLabel.text;
+            
             self.summaryExchangeRate.text = exchangeRateString;
+            self.summaryExchangeRate.textColor = textColor;
+            
             self.miscExchangeRate.text = exchangeRateString;
+            self.miscExchangeRate.textColor = textColor;
         });
+
         
         bool isPool = (self.payoutAddress == nil);
         
         // Now we fetch the HTML data from the middlecoin page.
         NSURL* htmlURL;
         if (isPool)
-            htmlURL = [NSURL URLWithString:@"http://www.middlecoin.com"];
+            htmlURL = [NSURL URLWithString:POOLS_STATS_PAGE];
         else
-            htmlURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.middlecoin.com/reports/%@.html", self.payoutAddress]];
+            htmlURL = [NSURL URLWithString:[NSString stringWithFormat:USER_STATS_PAGE, self.payoutAddress]];
         
         NSString *htmlData = [NSString stringWithContentsOfURL:htmlURL encoding:NSUTF8StringEncoding error:&error];
         
@@ -355,45 +401,85 @@
             });
             return;
         }
+        
+        // Generate filtered Javascript data (for web page)
+        NSString* filteredJavascript = [StatsController filterJavascript:jsData];
+        
+        // Make a 'fake' web page and include JS data in it
+        NSString* graphHtml = [StatsController generateGraphDataFrom:filteredJavascript];
+        
+        // Extract the 'hard to get' data from this thread so that main thread doesn't hang momentarily
+        NSString *immatureString = [StatsController extractStringFromHTML:filteredJavascript usingRegex:@"Immature:.*?txt=' (.*?) *'" getLast:false];
+        NSString *unexchangedString = [StatsController extractStringFromHTML:filteredJavascript usingRegex:@"Unexchanged:.*?txt=' (.*?) *'" getLast:false];
+        NSString *balanceString = [StatsController extractStringFromHTML:filteredJavascript usingRegex:@"Balance:.*?txt=' (.*?) *'" getLast:false];
+        NSString *acceptedString = [StatsController extractStringFromHTML:filteredJavascript usingRegex:@"Accepted:.*?txt=' (.*?) *'" getLast:false];
+        NSString *rejectedString = [StatsController extractStringFromHTML:filteredJavascript usingRegex:@"Rejected:.*?txt=' (.*?) *'" getLast:false];
+        NSString *averageHashString = [StatsController extractStringFromHTML:filteredJavascript usingRegex:@"Six Hour Moving Average:.*?txt=' (.*?) *'" getLast:false];
+        NSString *updateDateString = [StatsController extractStringFromHTML:filteredJavascript usingRegex:@"Latest Values in BTC at (.*?) UTC" getLast:false];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             
-            // Make a 'fake' web page and include JS data in it
-            [self setGraphDataInWebview:jsData];
+            [self.webView loadHTMLString:graphHtml baseURL:nil];
             
             // Parse the JS data
             
-            NSString *immatureString = [StatsController extractStringFromHTML:jsData usingRegex:@"Immature:.*?txt=' (.*?) *'" getLast:false];
             self.currentImmature.text = [StatsController formatBTCFromString:immatureString withExchangeRate:exchangeRate andSymbol:symbol];
             
-            NSString *unexchangedString = [StatsController extractStringFromHTML:jsData usingRegex:@"Unexchanged:.*?txt=' (.*?) *'" getLast:false];
             self.currentUnexchanged.text = [StatsController formatBTCFromString:unexchangedString withExchangeRate:exchangeRate andSymbol:symbol];
-
             
-            NSString *balanceString = [StatsController extractStringFromHTML:jsData usingRegex:@"Balance:.*?txt=' (.*?) *'" getLast:false];
             self.currentBalance.text = [StatsController formatBTCFromString:balanceString withExchangeRate:exchangeRate andSymbol:symbol];
             self.summaryBalance.text = self.currentBalance.text;
             
-            NSString *acceptedString = [StatsController extractStringFromHTML:jsData usingRegex:@"Accepted:.*?txt=' (.*?) *'" getLast:false];
-            self.hashAccepted.text = acceptedString;
             double accepted = [[acceptedString stringByReplacingOccurrencesOfString:@" Mh/s" withString:@""] doubleValue];
+            if (accepted <= ERROR_ACCEPTED_RATE)
+                [StatsController setLabelErrorText:self.hashAccepted toValue:acceptedString];
+            else if (accepted <= WARNING_ACCEPTED_RATE)
+                [StatsController setLabelWarningText:self.hashAccepted toValue:acceptedString];
+            else
+                [StatsController setLabelText:self.hashAccepted toValue:acceptedString];
             
-            NSString *rejectedString = [StatsController extractStringFromHTML:jsData usingRegex:@"Rejected:.*?txt=' (.*?) *'" getLast:false];
             self.hashRejected.text = rejectedString;
             double rejected = [[rejectedString stringByReplacingOccurrencesOfString:@" Mh/s" withString:@""] doubleValue];
-            
-            self.summaryAcceptReject.text = [NSString stringWithFormat:@"%.2f/%.2f Mh/s", accepted, rejected];
-            
+
+            double rejectRatio;
             if (accepted <= 0)
-                self.hashRatio.text = @"N/A";
+                rejectRatio = -1.0;
             else
-                self.hashRatio.text = [NSString stringWithFormat:@"%.3f %%", rejected / accepted];
+                rejectRatio = rejected / accepted;
             
-            NSString *averageHashString = [StatsController extractStringFromHTML:jsData usingRegex:@"Three Hour Moving Average:.*?txt=' (.*?) *'" getLast:false];
-            self.hashAverage.text = averageHashString;
+            if (rejectRatio < 0)
+                [StatsController setLabelErrorText:self.hashRatio toValue:@"N/A"];
+            else
+            {
+                NSString* formatted = [NSString stringWithFormat:@"%.3f %%", rejectRatio];
+                if (rejectRatio > ERROR_REJECT_RATIO)
+                    [StatsController setLabelErrorText:self.hashRatio toValue:formatted];
+                else if (rejectRatio > WARNING_REJECT_RATIO)
+                    [StatsController setLabelWarningText:self.hashRatio toValue:formatted];
+                else
+                    [StatsController setLabelText:self.hashRatio toValue:formatted];
+            }
+            
+            {
+                NSString* formatted = [NSString stringWithFormat:@"%.2f/%.2f Mh/s", accepted, rejected];
+                if (accepted == 0.0 || rejected > accepted || accepted < ERROR_ACCEPTED_RATE || rejectRatio < 0.0 || rejectRatio > ERROR_REJECT_RATIO)
+                    [StatsController setLabelErrorText:self.summaryAcceptReject toValue:formatted];
+                else if (rejectRatio > WARNING_REJECT_RATIO || accepted < WARNING_ACCEPTED_RATE)
+                    [StatsController setLabelWarningText:self.summaryAcceptReject toValue:formatted];
+                else
+                    [StatsController setLabelText:self.summaryAcceptReject toValue:formatted];
+            }
+            
+            
+            double averageHash = [[averageHashString stringByReplacingOccurrencesOfString:@" Mh/s" withString:@""] doubleValue];
+            if (averageHash <= ERROR_ACCEPTED_RATE)
+                [StatsController setLabelErrorText:self.hashAverage toValue:averageHashString];
+            else if (averageHash <= WARNING_ACCEPTED_RATE)
+                [StatsController setLabelWarningText:self.hashAverage toValue:averageHashString];
+            else
+                [StatsController setLabelText:self.hashAverage toValue:averageHashString];
             
             // Extract update date from graph
-            NSString *updateDateString = [StatsController extractStringFromHTML:jsData usingRegex:@"Latest Values in BTC at (.*?) UTC" getLast:false];
             self.miscLastDataUpdate.text = [StatsController convertToLocalDate:updateDateString withOption:true];
             
             NSDate* now = [NSDate date];
@@ -407,18 +493,45 @@
             
             // Calculate simple forecast
             double timeSinceLastPayout = ABS([lastPayoutDate timeIntervalSinceNow]);
-            if (timeSinceLastPayout < 60 * 60)
+            double balance = [balanceString doubleValue];
+            if (timeSinceLastPayout < 60 * 60 * 3)
                 self.recentNextForecastAmount.text = @"Insufficient data";
             else
             {
                 // todo: need to calculate time between last payout and 9:30pm (and use that instead of 24*60*60)
-                double balance = [balanceString doubleValue];
                 double forecast = balance * 24 * 60 * 60 / timeSinceLastPayout;
                 if (forecast < balance)
                     forecast = balance;
                 self.recentNextForecastAmount.text = [StatsController formatBTCFromDouble:forecast withExchangeRate:exchangeRate andSymbol:symbol];
             }
             self.summaryPayoutForecast.text = self.recentNextForecastAmount.text;
+            
+            // Calculate current BTC/MH/s
+            if (timeSinceLastPayout < 60 * 60 * 3)
+            {
+                [StatsController setLabelText:self.summaryCurrentPerMHs toValue:@"Insufficient data"];
+                [StatsController setLabelText:self.recentCurrentPerMHs toValue:@"Insufficient data"];
+            }
+            else
+            {
+                double btcPerMHs;
+                if (averageHash == 0.0)
+                    btcPerMHs = 0.0;
+                else
+                    btcPerMHs = balance / timeSinceLastPayout * 60.0 * 60.0 * 24.0 / averageHash;
+                
+                NSString* formatted = [StatsController formatBTCFromDouble:btcPerMHs withExchangeRate:exchangeRate andSymbol:symbol];
+                if (btcPerMHs > ERROR_BTC_PER_MHS)
+                {
+                    [StatsController setLabelText:self.summaryCurrentPerMHs toValue:formatted];
+                    [StatsController setLabelText:self.recentCurrentPerMHs toValue:formatted];
+                }
+                else
+                {
+                    [StatsController setLabelErrorText:self.summaryCurrentPerMHs toValue:formatted];
+                    [StatsController setLabelErrorText:self.recentCurrentPerMHs toValue:formatted];
+                }
+            }
             
             [self finishRefreshing];
         });
@@ -488,6 +601,27 @@
     return [NSString stringWithFormat:@"%.4f", rate];
 }
 
++(void)setLabelText:(UILabel*)label toValue:(NSString*)text
+{
+    [StatsController setLabelText:label toValue:text withColor:[UIColor blackColor]];
+}
+
++(void)setLabelWarningText:(UILabel*)label toValue:(NSString*)text
+{
+    [StatsController setLabelText:label toValue:text withColor:[UIColor orangeColor]];
+}
+
++(void)setLabelErrorText:(UILabel*)label toValue:(NSString*)text
+{
+    [StatsController setLabelText:label toValue:text withColor:[UIColor redColor]];
+}
+
++(void)setLabelText:(UILabel*)label toValue:(NSString*)text withColor:(UIColor*) color
+{
+    label.textColor = color;
+    label.text = text;
+}
+
 +(NSString*)formatBTCFromString:(NSString*)amount withExchangeRate:(double)rate andSymbol:(NSString*)symbol
 {
     return [StatsController formatBTCFromDouble:[amount doubleValue] withExchangeRate:rate andSymbol:symbol];
@@ -503,7 +637,7 @@
     else
         btc = [NSString stringWithFormat:@"%.4f %@", amount, BITCOIN_SYMBOL];
     
-    if (rate < 0.0)
+    if (rate <= 0.0)
         return btc;
     
     double converted = rate * amount;
@@ -533,14 +667,6 @@
     [StatsController setCenteredTextInWebview:self.webView toText:text];
 }
 
--(void)setGraphDataInWebview:(NSString*)rawJavascriptData
-{
-    NSString* filtered = [StatsController filterJavascript:rawJavascriptData];
-    NSString *myHTML = [[@"<html><head><meta name=\"viewport\" content=\"width=device-width\" /><style type=\"text/css\">body { margin:5px }</style></head><body><div style=\"width:520px; height:378px; overflow:hidden;\"><canvas id=\"mc_data\" width=\"520\" height=\"400\">Hm no HTML canvas graphics support??</canvas><script type=\"text/javascript\">" stringByAppendingString:filtered] stringByAppendingString:@"</script></html></body>"];
-    [self.webView loadHTMLString:myHTML baseURL:nil];
-}
-
-// if useSmallFormat is true, the returned javascript will be
 +(NSString*)filterJavascript:(NSString*)data
 {
     NSString* prepend = @"var newWidth = 520; ctx.translate(newWidth - 1000, 0);";
@@ -549,6 +675,12 @@
     result = [result stringByReplacingOccurrencesOfString:@"ctx.fillStyle='white';ctx.fillRect(940+1,0,1000,20-4);" withString:@""];
     
     return result;
+}
+
++(NSString*) generateGraphDataFrom:(NSString*)javascriptData
+{
+    NSString* myHTML = [NSString stringWithFormat:@"%@%@%@", @"<html><head><meta name=\"viewport\" content=\"width=device-width\" /><style type=\"text/css\">body { margin:5px }</style></head><body><div style=\"width:520px; height:378px; overflow:hidden;\"><canvas id=\"mc_data\" width=\"520\" height=\"400\">Hm no HTML canvas graphics support??</canvas><script type=\"text/javascript\">", javascriptData, @"</script></html></body>"];
+    return myHTML;
 }
 
 @end

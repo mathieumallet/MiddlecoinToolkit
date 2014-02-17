@@ -27,4 +27,18 @@
 
 #define AUTO_REFRESH_INTERVAL (60 * 10)
 
+#define ERROR_BTC_PER_MHS 0.005
+
+#define WARNING_REJECT_RATIO 0.05
+#define ERROR_REJECT_RATIO 0.20
+
+#define ERROR_ACCEPTED_RATE 0.1
+#define WARNING_ACCEPTED_RATE 1.0
+
+#define POOLS_STATS_PAGE @"http://www.middlecoin.com"
+#define USER_STATS_PAGE @"http://www.middlecoin.com/reports/%@.html"
+
+#define USER_GRAPH_PAGE @"http://192.237.252.90/coinGeek/js/all/%@.js"
+#define USER_JSON_PAGE @"http://www.middlecoin.com/reports/%@.json"
+
 #endif
