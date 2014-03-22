@@ -11,8 +11,6 @@
 @interface StatsController : UIViewController
 {
     NSString* payoutAddress;
-    NSDate* lastRefreshDate;
-
 }
 
 +(void)setCenteredTextInWebview:(UIWebView*)webview toText:(NSString*)text;

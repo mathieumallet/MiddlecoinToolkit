@@ -21,7 +21,8 @@
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 @property NSString* payoutAddress;
 @property NSString* currency;
-
+@property NSDate* lastRefreshDate;
+@property NSTimer* updateTimer;
 
 @property (weak, nonatomic) IBOutlet UILabel *summaryBalance;
 @property (weak, nonatomic) IBOutlet UILabel *summaryPayoutForecast;
@@ -29,6 +30,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *summaryExchangeRateLabel;
 @property (weak, nonatomic) IBOutlet UILabel *summaryExchangeRate;
 @property (weak, nonatomic) IBOutlet UILabel *summaryAcceptReject;
+@property (weak, nonatomic) IBOutlet UILabel *summaryTotalUnpaid;
+@property (weak, nonatomic) IBOutlet UILabel *summaryLastUpdate;
 
 @property (weak, nonatomic) IBOutlet UILabel *currentBalance;
 @property (weak, nonatomic) IBOutlet UILabel *currentUnexchanged;
@@ -53,8 +56,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *sevenPerMHs;
 @property (weak, nonatomic) IBOutlet UILabel *sevenTotal;
 
-@property (weak, nonatomic) IBOutlet UILabel *thirtySmartAverage;
-@property (weak, nonatomic) IBOutlet UILabel *thirtyTrueAverage;
+@property (weak, nonatomic) IBOutlet UILabel *thirtyAverage;
 @property (weak, nonatomic) IBOutlet UILabel *thirtyStdev;
 @property (weak, nonatomic) IBOutlet UILabel *thirtyMin;
 @property (weak, nonatomic) IBOutlet UILabel *thirtyMax;
@@ -74,8 +76,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *miscExchangeRateLabel;
 @property (weak, nonatomic) IBOutlet UILabel *miscExchangeRate;
 @property (weak, nonatomic) IBOutlet UILabel *miscAddress;
-
-
 
 @end
 
@@ -99,12 +99,6 @@
     
     self.webView.scrollView.scrollsToTop = false;
     self.scrollView.scrollsToTop = true;
-    
-    /*self.refreshControl = [[UIRefreshControl alloc] init];
-    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to refresh"];
-    self.scrollView.delegate = (id)self;
-    [self.refreshControl addTarget:self action:@selector(refreshControlTriggered:) forControlEvents:UIControlEventValueChanged];
-    [self.scrollView addSubview:self.refreshControl];*/
     
     self.refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshButtonPressed:)];
     self.navigationItem.rightBarButtonItem = self.refreshButton;
@@ -137,35 +131,50 @@
     if (self.currency == nil)
         self.currency = @"USD";
     
-    if (lastRefreshDate == nil || [lastRefreshDate timeIntervalSinceNow] < -AUTO_REFRESH_INTERVAL)
+    if (self.lastRefreshDate == nil || [self.lastRefreshDate timeIntervalSinceNow] < -AUTO_REFRESH_INTERVAL)
         [self tryRefresh];
+    
+    NSRunLoop *runloop = [NSRunLoop currentRunLoop];
+    self.updateTimer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(timerTriggered:) userInfo:nil repeats:YES];
+    [runloop addTimer:self.updateTimer forMode:NSRunLoopCommonModes];
+    [runloop addTimer:self.updateTimer forMode:UITrackingRunLoopMode];
 }
 
 -(void) viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
+        self.webView.frame = CGRectMake(0, 0, 320, 240);
 }
 
 -(void) viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
     self.scrollPosition = self.scrollView.contentOffset;
+    
+    [self.updateTimer invalidate];
 }
 
 -(void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
     
-    self.edgesForExtendedLayout = UIRectEdgeAll;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
+        self.edgesForExtendedLayout = UIRectEdgeAll;
     float headerSize = 20; // status bar height
     if (self.navigationController && self.navigationController.navigationBarHidden == NO)
         headerSize += self.navigationController.toolbar.frame.size.height;
     float tabBarSize = 49;
-    self.scrollView.contentInset = UIEdgeInsetsMake(headerSize, 0, tabBarSize, 0);
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
+        self.scrollView.contentInset = UIEdgeInsetsMake(headerSize, 0, tabBarSize, 0);
+    
     self.scrollView.contentSize = self.innerView.frame.size;
     
     if (self.scrollPosition.x != 0 || self.scrollPosition.y != 0)
         self.scrollView.contentOffset = self.scrollPosition;
+    
+    [self.webView layoutIfNeeded];
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
@@ -175,8 +184,53 @@
 
 -(NSArray*)getAllLabels
 {
-    return [NSArray arrayWithObjects:self.summaryBalance, self.summaryPayoutForecast, self.summaryAcceptReject, self.summaryExchangeRate,self.currentBalance, self.currentUnexchanged, self.currentImmature, self.currentTotal, self.hashAccepted, self.hashRejected, self.hashRatio, self.hashAverage, self.recentPayoutDate, self.recentPayoutAmount, self.recentNextPayoutIn, self.recentNextForecastAmount,self.sevenAverage, self.sevenStdev, self.sevenMin, self.sevenMax, self.sevenPerMHs, self.sevenTotal, self.thirtySmartAverage, self.thirtyTrueAverage, self.thirtyStdev, self.thirtyMin, self.thirtyMax, self.thirtyPerMHs, self.thirtyTotal,self.allAverage, self.allStdev, self.allMin, self.allMax, self.allPerMHs, self.allTotal, self.miscLastDataUpdate, self.miscLastAppRefresh, self.miscSizeOfLastUpdate, self.miscExchangeRate, self.miscAddress, self.summaryCurrentPerMHs, self.recentCurrentPerMHs,
-            nil];
+    NSMutableArray* array = [[NSMutableArray alloc] init];
+    
+    if (self.summaryBalance) [array addObject:self.summaryBalance];
+    if (self.summaryPayoutForecast) [array addObject:self.summaryPayoutForecast];
+    if (self.summaryAcceptReject) [array addObject:self.summaryAcceptReject];
+    if (self.summaryExchangeRate) [array addObject:self.summaryExchangeRate];
+    if (self.summaryTotalUnpaid) [array addObject:self.summaryTotalUnpaid];
+    if (self.summaryLastUpdate) [array addObject:self.summaryLastUpdate];
+    if (self.currentBalance) [array addObject:self.currentBalance];
+    if (self.currentUnexchanged) [array addObject:self.currentUnexchanged];
+    if (self.currentImmature) [array addObject:self.currentImmature];
+    if (self.currentTotal) [array addObject:self.currentTotal];
+    if (self.hashAccepted) [array addObject:self.hashAccepted];
+    if (self.hashRejected) [array addObject:self.hashRejected];
+    if (self.hashRatio) [array addObject:self.hashRatio];
+    if (self.hashAverage) [array addObject:self.hashAverage];
+    if (self.recentPayoutDate) [array addObject:self.recentPayoutDate];
+    if (self.recentPayoutAmount) [array addObject:self.recentPayoutAmount];
+    if (self.recentNextPayoutIn) [array addObject:self.recentNextPayoutIn];
+    if (self.recentNextForecastAmount) [array addObject:self.recentNextForecastAmount];
+    if (self.sevenAverage) [array addObject:self.sevenAverage];
+    if (self.sevenStdev) [array addObject:self.sevenStdev];
+    if (self.sevenMin) [array addObject:self.sevenMin];
+    if (self.sevenMax) [array addObject:self.sevenMax];
+    if (self.sevenPerMHs) [array addObject:self.sevenPerMHs];
+    if (self.sevenTotal) [array addObject:self.sevenTotal];
+    if (self.thirtyAverage) [array addObject:self.thirtyAverage];
+    if (self.thirtyStdev) [array addObject:self.thirtyStdev];
+    if (self.thirtyMin) [array addObject:self.thirtyMin];
+    if (self.thirtyMax) [array addObject:self.thirtyMax];
+    if (self.thirtyPerMHs) [array addObject:self.thirtyPerMHs];
+    if (self.thirtyTotal) [array addObject:self.thirtyTotal];
+    if (self.allAverage) [array addObject:self.allAverage];
+    if (self.allStdev) [array addObject:self.allStdev];
+    if (self.allMin) [array addObject:self.allMin];
+    if (self.allMax) [array addObject:self.allMax];
+    if (self.allPerMHs) [array addObject:self.allPerMHs];
+    if (self.allTotal) [array addObject:self.allTotal];
+    if (self.miscLastDataUpdate) [array addObject:self.miscLastDataUpdate];
+    if (self.miscLastAppRefresh) [array addObject:self.miscLastAppRefresh];
+    if (self.miscSizeOfLastUpdate) [array addObject:self.miscSizeOfLastUpdate];
+    if (self.miscExchangeRate) [array addObject:self.miscExchangeRate];
+    if (self.miscAddress) [array addObject:self.miscAddress];
+    if (self.summaryCurrentPerMHs) [array addObject:self.summaryCurrentPerMHs];
+    if (self.recentCurrentPerMHs) [array addObject:self.recentCurrentPerMHs];
+    
+    return array;
 }
 
 -(void)setAllLabelsTo:(NSString*)text withErrorMode:(bool)isError
@@ -259,6 +313,8 @@
         double exchangeRate = -1.0;
         NSString* exchangeRateString = @"N/A";
         
+        long long downloadedBytes = 0;
+        
         NSError *error = nil;
         if ([self.currency isEqualToString:@""])
         {
@@ -266,7 +322,8 @@
         }
         else
         {
-            NSString *marketData = [NSString stringWithContentsOfURL:marketDataURL encoding:NSUTF8StringEncoding error:&error];
+            //NSString *marketData = [NSString stringWithContentsOfURL:marketDataURL encoding:NSUTF8StringEncoding error:&error];
+            NSString* marketData = [StatsController downloadURL:marketDataURL error:&error downloadSize:&downloadedBytes];
             if (marketData)
             {
                 // Parse exchange rate
@@ -274,6 +331,7 @@
                 if (marketDataDict == nil || error != nil)
                 {
                     exchangeRateString = @"Error parsing data";
+                    NSLog(@"Error parsing market data: %@", [error localizedDescription]);
                 }
                 else
                 {
@@ -281,6 +339,7 @@
                     if (data == nil)
                     {
                         exchangeRateString = @"Error locating data";
+                        NSLog(@"Error locating market data: %@", [error localizedDescription]);
                     }
                     else
                     {
@@ -293,8 +352,10 @@
             else
             {
                 exchangeRateString = @"Error loading data";
+                NSLog(@"Error loading market data: %@", [error localizedDescription]);
             }
         }
+        error = nil;
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             UIColor* textColor;
@@ -324,63 +385,14 @@
         
         bool isPool = (self.payoutAddress == nil);
         
-        // Now we fetch the HTML data from the middlecoin page.
-        NSURL* htmlURL;
+        // Now we fetch the Javascript data
+        NSURL* jsUrl;
         if (isPool)
-            htmlURL = [NSURL URLWithString:POOLS_STATS_PAGE];
+            jsUrl = [NSURL URLWithString:POOL_GRAPH_PAGE];
         else
-            htmlURL = [NSURL URLWithString:[NSString stringWithFormat:USER_STATS_PAGE, self.payoutAddress]];
-        
-        NSString *htmlData = [NSString stringWithContentsOfURL:htmlURL encoding:NSUTF8StringEncoding error:&error];
-        
-        if (!htmlData)
-        {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                [self setCenteredTextInWebviewTo:[NSString stringWithFormat:@"Failed to load HTML data for statistics due to error: %@", error.localizedDescription]];
-                [self setAllLabelsTo:@"Error" withErrorMode:true];
-                [self finishRefreshing];
-            });
-            return;
-        }
-        
-        // Get Javascript URL
-        NSURL *jsUrl = [NSURL URLWithString:[StatsController extractStringFromHTML:htmlData usingRegex:@".*<script .*\"(http://.*)\"></script>.*" getLast:false]];
-        if (jsUrl == nil)
-        {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                [self setCenteredTextInWebviewTo:@"Failed to parse received HTML data."];
-                [self setAllLabelsTo:@"N/A" withErrorMode:true];
-                [self finishRefreshing];
-            });
-            return;
-        }
-
-        // Now parse the other stuff on the HTML page (e.g. last payout amount and last update date)
-        NSString *lastPayoutDateString = [StatsController extractStringFromHTML:htmlData usingRegex:@"</td>\n<td>(.*)</td>\n<td>" getLast:true];
-        NSDate* lastPayoutDate = [StatsController readDate:lastPayoutDateString withOption:false];
-        
-        dispatch_async(dispatch_get_main_queue(), ^(void) {
-            // Get last payout amount
-            NSString *lastPayoutAmountString = [StatsController extractStringFromHTML:htmlData usingRegex:@"m.</td>\n<td>(.*)</td>\n</tr>" getLast:true];
-            self.recentPayoutAmount.text = [StatsController formatBTCFromString:lastPayoutAmountString withExchangeRate:exchangeRate andSymbol:symbol];
-            
-            self.recentPayoutDate.text = [StatsController printLocalDate:lastPayoutDate];
-            
-            NSString *totalPaidOutString;
-            if (isPool)
-            {
-                totalPaidOutString = [StatsController extractStringFromHTML:htmlData usingRegex:@"<td>(.*)</td>\n</tr>" getLast:true];
-            }
-            else
-            {
-                totalPaidOutString = [StatsController extractStringFromHTML:htmlData usingRegex:@"<td>(.*)</a></td>\n</tr>" getLast:true];
-            }
-            self.allTotal.text = [StatsController formatBTCFromString:totalPaidOutString withExchangeRate:exchangeRate andSymbol:symbol];
-        });
-        
-        
-        // Now download the javascript data.
-        NSString *jsData = [NSString stringWithContentsOfURL:jsUrl encoding:NSUTF8StringEncoding error:&error];
+            jsUrl = [NSURL URLWithString:[NSString stringWithFormat:USER_GRAPH_PAGE, payoutAddress]];
+        //NSString* jsData = [NSString stringWithContentsOfURL:jsUrl encoding:NSUTF8StringEncoding error:&error];
+        NSString* jsData = [StatsController downloadURL:jsUrl error:&error downloadSize:&downloadedBytes];
         
         if ([@"" isEqualToString:jsData])
         {
@@ -394,13 +406,53 @@
         
         if (!jsData)
         {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                [self setCenteredTextInWebviewTo:[NSString stringWithFormat:@"Failed to load graph data due to error: %@", error.localizedDescription]];
-                [self setAllLabelsTo:@"Error" withErrorMode:true];
-                [self finishRefreshing];
-            });
-            return;
+            // Hmm. Maybe our hard-coded URL is frelled. Try fallback.
+            NSURL *fallbackUrl;
+            if (isPool)
+                fallbackUrl = [NSURL URLWithString:FALLBACK_POOL_GRAPH_URL_PAGE];
+            else
+                fallbackUrl = [NSURL URLWithString:FALLBACK_GRAPH_URL_PAGE];
+            error = nil;
+            //NSString *fallbackData = [NSString stringWithContentsOfURL:fallbackUrl encoding:NSUTF8StringEncoding error:&error];
+            NSString* fallbackData = [StatsController downloadURL:fallbackUrl error:&error downloadSize:&downloadedBytes];
+            if (fallbackData)
+            {
+                NSString* correctLink;
+                if (isPool)
+                {
+                    // Extract the Javascript URL from the HTML data
+                    correctLink = [StatsController extractStringFromHTML:fallbackData usingRegex:@".*<script .*\"(http://.*)\"></script>.*" getLast:false];
+                }
+                else
+                {
+                    // Try to extract Javascript URL from there
+                    NSString* wrongLink = [StatsController extractStringFromHTML:fallbackData usingRegex:@".*<script .*\"(http://.*)\"></script>.*" getLast:false];
+                    
+                    // We need to replace the 'wrong' address with our own address
+                    correctLink = [wrongLink stringByReplacingOccurrencesOfString:FALLBACK_GRAPH_ADDRESS withString:payoutAddress];
+                }
+                
+                // Now try to fetch data again
+                jsUrl = [NSURL URLWithString:correctLink];
+                jsData = [NSString stringWithContentsOfURL:jsUrl encoding:NSUTF8StringEncoding error:&error];
+
+                if (jsData)
+                {
+                    NSLog(@"Failed to load Javascript data from hard-coded URL, but fallback URL worked fine.");
+                }
+            }
+            
+            if (!jsData)
+            {
+                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    [self setCenteredTextInWebviewTo:[NSString stringWithFormat:@"Failed to load graph data due to error: %@", error.localizedDescription]];
+                    [self setAllLabelsTo:@"Error" withErrorMode:true];
+                    [self finishRefreshing];
+                });
+                return;
+            }
         }
+        error = nil;
         
         // Generate filtered Javascript data (for web page)
         NSString* filteredJavascript = [StatsController filterJavascript:jsData];
@@ -417,6 +469,9 @@
         NSString *averageHashString = [StatsController extractStringFromHTML:filteredJavascript usingRegex:@"Six Hour Moving Average:.*?txt=' (.*?) *'" getLast:false];
         NSString *updateDateString = [StatsController extractStringFromHTML:filteredJavascript usingRegex:@"Latest Values in BTC at (.*?) UTC" getLast:false];
 
+        NSDate* lastDataUpdate = [StatsController readDate:updateDateString withOption:true];
+        double averageHash = [[averageHashString stringByReplacingOccurrencesOfString:@" Mh/s" withString:@""] doubleValue];
+        
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             
             [self.webView loadHTMLString:graphHtml baseURL:nil];
@@ -431,16 +486,12 @@
             self.summaryBalance.text = self.currentBalance.text;
             
             double accepted = [[acceptedString stringByReplacingOccurrencesOfString:@" Mh/s" withString:@""] doubleValue];
-            if (accepted <= ERROR_ACCEPTED_RATE)
-                [StatsController setLabelErrorText:self.hashAccepted toValue:acceptedString];
-            else if (accepted <= WARNING_ACCEPTED_RATE)
-                [StatsController setLabelWarningText:self.hashAccepted toValue:acceptedString];
-            else
-                [StatsController setLabelText:self.hashAccepted toValue:acceptedString];
+            self.hashAccepted.text = acceptedString;
+            [StatsController colorizeLabel:self.hashAccepted setOrange:(accepted <= WARNING_ACCEPTED_RATE) setRed:(accepted <= ERROR_ACCEPTED_RATE)];
             
             self.hashRejected.text = rejectedString;
             double rejected = [[rejectedString stringByReplacingOccurrencesOfString:@" Mh/s" withString:@""] doubleValue];
-
+            
             double rejectRatio;
             if (accepted <= 0)
                 rejectRatio = -1.0;
@@ -448,95 +499,331 @@
                 rejectRatio = rejected / accepted;
             
             if (rejectRatio < 0)
-                [StatsController setLabelErrorText:self.hashRatio toValue:@"N/A"];
+            {
+                self.hashRatio.text = @"N/A";
+                self.hashRatio.textColor = [UIColor redColor];
+            }
             else
             {
-                NSString* formatted = [NSString stringWithFormat:@"%.3f %%", rejectRatio];
-                if (rejectRatio > ERROR_REJECT_RATIO)
-                    [StatsController setLabelErrorText:self.hashRatio toValue:formatted];
-                else if (rejectRatio > WARNING_REJECT_RATIO)
-                    [StatsController setLabelWarningText:self.hashRatio toValue:formatted];
-                else
-                    [StatsController setLabelText:self.hashRatio toValue:formatted];
-            }
+                NSString* formatted = [NSString stringWithFormat:@"%.2f %%", rejectRatio * 100.0];
+                self.hashRatio.text = formatted;
+                
+                [StatsController colorizeLabel:self.hashRatio setOrange:(rejectRatio >= WARNING_REJECT_RATIO) setRed:(rejectRatio >= ERROR_REJECT_RATIO)];            }
             
             {
                 NSString* formatted = [NSString stringWithFormat:@"%.2f/%.2f Mh/s", accepted, rejected];
-                if (accepted == 0.0 || rejected > accepted || accepted < ERROR_ACCEPTED_RATE || rejectRatio < 0.0 || rejectRatio > ERROR_REJECT_RATIO)
-                    [StatsController setLabelErrorText:self.summaryAcceptReject toValue:formatted];
-                else if (rejectRatio > WARNING_REJECT_RATIO || accepted < WARNING_ACCEPTED_RATE)
-                    [StatsController setLabelWarningText:self.summaryAcceptReject toValue:formatted];
-                else
-                    [StatsController setLabelText:self.summaryAcceptReject toValue:formatted];
+                
+                bool error = (accepted == 0.0 || rejected > accepted || accepted < ERROR_ACCEPTED_RATE || rejectRatio < 0.0 || rejectRatio > ERROR_REJECT_RATIO);
+                bool warn = (rejectRatio > WARNING_REJECT_RATIO || accepted < WARNING_ACCEPTED_RATE);
+                self.summaryAcceptReject.text = formatted;
+                [StatsController colorizeLabel:self.summaryAcceptReject setOrange:warn setRed:error];
             }
             
-            
-            double averageHash = [[averageHashString stringByReplacingOccurrencesOfString:@" Mh/s" withString:@""] doubleValue];
-            if (averageHash <= ERROR_ACCEPTED_RATE)
-                [StatsController setLabelErrorText:self.hashAverage toValue:averageHashString];
-            else if (averageHash <= WARNING_ACCEPTED_RATE)
-                [StatsController setLabelWarningText:self.hashAverage toValue:averageHashString];
-            else
-                [StatsController setLabelText:self.hashAverage toValue:averageHashString];
+            self.hashAverage.text = averageHashString;
+            [StatsController colorizeLabel:self.hashAverage setOrange:(averageHash <= WARNING_ACCEPTED_RATE) setRed:(averageHash <= ERROR_ACCEPTED_RATE)];
             
             // Extract update date from graph
-            self.miscLastDataUpdate.text = [StatsController convertToLocalDate:updateDateString withOption:true];
-            
-            NSDate* now = [NSDate date];
-            self.miscLastAppRefresh.text = [StatsController printLocalDate:now];
-            lastRefreshDate = now;
-
+            //self.miscLastDataUpdate.text = [StatsController convertToLocalDate:updateDateString withOption:true];
+            self.miscLastDataUpdate.text = [StatsController printIntervalFor:lastDataUpdate];
+            self.summaryLastUpdate.text = self.miscLastDataUpdate.text;
             
             // Calcualte approximate total unpaid
             double unpaid = [balanceString doubleValue] + [immatureString doubleValue] + [unexchangedString doubleValue];
             self.currentTotal.text = [StatsController formatBTCFromDouble:unpaid withExchangeRate:exchangeRate andSymbol:symbol];
+            self.summaryTotalUnpaid.text = self.currentTotal.text;
+        });
+        
+        
+        // Now we fetch the HTML data from the middlecoin page.
+        NSURL* htmlURL;
+        if (isPool)
+            htmlURL = [NSURL URLWithString:POOLS_STATS_PAGE];
+        else
+            //htmlURL = [NSURL URLWithString:[NSString stringWithFormat:USER_STATS_PAGE, self.payoutAddress]];
+            htmlURL = [NSURL URLWithString:[NSString stringWithFormat:USER_JSON_PAGE, self.payoutAddress]];
+        
+        //NSString *htmlData = [NSString stringWithContentsOfURL:htmlURL encoding:NSUTF8StringEncoding error:&error];
+        NSString* htmlData = [StatsController downloadURL:htmlURL error:&error downloadSize:&downloadedBytes];
+        
+        if (!htmlData)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [self setCenteredTextInWebviewTo:[NSString stringWithFormat:@"Failed to load HTML data for statistics due to error: %@", error.localizedDescription]];
+                [self setAllLabelsTo:@"Error" withErrorMode:true];
+                [self finishRefreshing];
+            });
+            return;
+        }
+        
+        // Parse all the data into a single array (where each entry is an array containing the payout date and the payout amount)
+        NSArray* payouts = [StatsController parsePayoutsDataFrom:htmlData isPool:isPool];
+
+        // Now parse the other stuff on the HTML page (e.g. last payout amount and last update date)
+        NSDate* lastPayoutDate = [[payouts lastObject] objectAtIndex:0];
+        double lastPayoutAmount = [[[payouts lastObject] objectAtIndex:1] doubleValue];
+        
+        // Calculate stats
+        NSDictionary* stats7 = [StatsController calculateStatsFrom:payouts forDays:7 andHashRate:averageHash];
+        NSDictionary* stats30 = [StatsController calculateStatsFrom:payouts forDays:30 andHashRate:averageHash];
+        NSDictionary* statsAll = [StatsController calculateStatsFrom:payouts forDays:(365*50) andHashRate:averageHash];
+        
+        double balance = [balanceString doubleValue];
+        double timeSinceLastPayout = ABS([lastPayoutDate timeIntervalSinceNow]);
+        double payoutForecast;
+        if (timeSinceLastPayout < 60 * 60 * 3)
+            payoutForecast = -1.0;
+        else
+        {
+            payoutForecast = balance * 24 * 60 * 60 / timeSinceLastPayout;
+            if (payoutForecast < balance)
+                payoutForecast = balance;
+        }
+            
+        
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            // Get last payout amount
+            //NSString *lastPayoutAmountString = [StatsController extractStringFromHTML:htmlData usingRegex:@"m.</td>\n<td>(.*)</td>\n</tr>" getLast:true];
+            self.recentPayoutAmount.text = [StatsController formatBTCFromDouble:lastPayoutAmount withExchangeRate:exchangeRate andSymbol:symbol];
+            self.recentPayoutDate.text = [StatsController printIntervalFor:lastPayoutDate];
             
             // Calculate simple forecast
-            double timeSinceLastPayout = ABS([lastPayoutDate timeIntervalSinceNow]);
-            double balance = [balanceString doubleValue];
-            if (timeSinceLastPayout < 60 * 60 * 3)
+            if (payoutForecast < 0)
                 self.recentNextForecastAmount.text = @"Insufficient data";
             else
             {
-                // todo: need to calculate time between last payout and 9:30pm (and use that instead of 24*60*60)
-                double forecast = balance * 24 * 60 * 60 / timeSinceLastPayout;
-                if (forecast < balance)
-                    forecast = balance;
-                self.recentNextForecastAmount.text = [StatsController formatBTCFromDouble:forecast withExchangeRate:exchangeRate andSymbol:symbol];
+                // TODO: need to calculate time between last payout and 9:30pm (and use that instead of 24*60*60)
+                self.recentNextForecastAmount.text = [StatsController formatBTCFromDouble:payoutForecast withExchangeRate:exchangeRate andSymbol:symbol];
             }
             self.summaryPayoutForecast.text = self.recentNextForecastAmount.text;
             
             // Calculate current BTC/MH/s
+            double btcPerMHs;
             if (timeSinceLastPayout < 60 * 60 * 3)
             {
-                [StatsController setLabelText:self.summaryCurrentPerMHs toValue:@"Insufficient data"];
-                [StatsController setLabelText:self.recentCurrentPerMHs toValue:@"Insufficient data"];
+                self.summaryCurrentPerMHs.text = @"Insufficient data";
+                self.recentCurrentPerMHs.text = @"Insufficient data";
+                btcPerMHs = 0.0/0.0;
             }
             else
             {
-                double btcPerMHs;
                 if (averageHash == 0.0)
                     btcPerMHs = 0.0;
                 else
                     btcPerMHs = balance / timeSinceLastPayout * 60.0 * 60.0 * 24.0 / averageHash;
                 
                 NSString* formatted = [StatsController formatBTCFromDouble:btcPerMHs withExchangeRate:exchangeRate andSymbol:symbol];
-                if (btcPerMHs > ERROR_BTC_PER_MHS)
-                {
-                    [StatsController setLabelText:self.summaryCurrentPerMHs toValue:formatted];
-                    [StatsController setLabelText:self.recentCurrentPerMHs toValue:formatted];
-                }
-                else
-                {
-                    [StatsController setLabelErrorText:self.summaryCurrentPerMHs toValue:formatted];
-                    [StatsController setLabelErrorText:self.recentCurrentPerMHs toValue:formatted];
-                }
+                self.summaryCurrentPerMHs.text = formatted;
+                self.recentCurrentPerMHs.text = formatted;
             }
+            
+            // Display stats
+            self.sevenAverage.text = [StatsController formatBTCFromDouble:[[stats7 valueForKey:@"average"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.sevenStdev.text = [StatsController formatBTCFromDouble:[[stats7 valueForKey:@"stdev"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.sevenMin.text = [StatsController formatBTCFromDouble:[[stats7 valueForKey:@"min"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.sevenMax.text = [StatsController formatBTCFromDouble:[[stats7 valueForKey:@"max"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.sevenPerMHs.text = [StatsController formatBTCFromDouble:[[stats7 valueForKey:@"perMHs"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.sevenTotal.text = [StatsController formatBTCFromDouble:[[stats7 valueForKey:@"total"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+
+            self.thirtyAverage.text = [StatsController formatBTCFromDouble:[[stats30 valueForKey:@"average"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.thirtyStdev.text = [StatsController formatBTCFromDouble:[[stats30 valueForKey:@"stdev"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.thirtyMin.text = [StatsController formatBTCFromDouble:[[stats30 valueForKey:@"min"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.thirtyMax.text = [StatsController formatBTCFromDouble:[[stats30 valueForKey:@"max"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.thirtyPerMHs.text = [StatsController formatBTCFromDouble:[[stats30 valueForKey:@"perMHs"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.thirtyTotal.text = [StatsController formatBTCFromDouble:[[stats30 valueForKey:@"total"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+
+            self.allAverage.text = [StatsController formatBTCFromDouble:[[statsAll valueForKey:@"average"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.allStdev.text = [StatsController formatBTCFromDouble:[[statsAll valueForKey:@"stdev"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.allMin.text = [StatsController formatBTCFromDouble:[[statsAll valueForKey:@"min"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.allMax.text = [StatsController formatBTCFromDouble:[[statsAll valueForKey:@"max"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.allPerMHs.text = [StatsController formatBTCFromDouble:[[statsAll valueForKey:@"perMHs"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            self.allTotal.text = [StatsController formatBTCFromDouble:[[statsAll valueForKey:@"total"] doubleValue] withExchangeRate:exchangeRate andSymbol:symbol];
+            
+            // Next payout stats
+            NSDate* nextPayoutDate = [StatsController calculateNextPayoutDateFrom:payouts];
+            self.recentNextPayoutIn.text = [StatsController formatNextPayoutDate:nextPayoutDate];
+            
+            // Colorize all the things!
+            double averagePayout7 = [[stats7 valueForKey:@"average"] doubleValue];
+            double btcPerMHs7 = [[stats7 valueForKey:@"perMHs"] doubleValue];
+            [StatsController colorizeLabel:self.recentPayoutAmount setOrange:(!isnan(averagePayout7) && lastPayoutAmount < averagePayout7) setRed:(lastPayoutAmount == 0.0)];
+            [StatsController colorizeLabel:self.recentNextPayoutIn setOrange:(nextPayoutDate == nil) setRed:false];
+            [StatsController colorizeLabel:self.recentCurrentPerMHs setOrange:(isnan(btcPerMHs)) setRed:(!isnan(btcPerMHs) && btcPerMHs < ERROR_BTC_PER_MHS)];
+            [StatsController colorizeLabel:self.summaryCurrentPerMHs setOrange:(isnan(btcPerMHs) || (!isnan(btcPerMHs7) && btcPerMHs < btcPerMHs7)) setRed:(!isnan(btcPerMHs) && btcPerMHs < ERROR_BTC_PER_MHS)];
+            [StatsController colorizeLabel:self.recentPayoutDate setOrange:(timeSinceLastPayout > 60 * 60 * 24 + INSUFFICIENT_DATA_INTERVAL) setRed:(timeSinceLastPayout > 60 * 60 * 48 + INSUFFICIENT_DATA_INTERVAL)];
+            
+            [StatsController colorizeLabel:self.summaryPayoutForecast setOrange:(payoutForecast < 0 || (!isnan(averagePayout7) && payoutForecast < averagePayout7)) setRed:(payoutForecast == 0.0)];
+
+            [StatsController colorizeLabel:self.sevenStdev setOrange:([[stats7 valueForKey:@"stdev"] doubleValue] > [[stats7 valueForKey:@"average"] doubleValue]) setRed:false];
+            [StatsController colorizeLabel:self.thirtyStdev setOrange:([[stats30 valueForKey:@"stdev"] doubleValue] > [[stats30 valueForKey:@"average"] doubleValue]) setRed:false];
+            [StatsController colorizeLabel:self.allStdev setOrange:([[statsAll valueForKey:@"stdev"] doubleValue] > [[statsAll valueForKey:@"average"] doubleValue]) setRed:false];
+            
+            [StatsController colorizeLabel:self.miscLastDataUpdate setOrange:([lastDataUpdate timeIntervalSinceNow] < -WARNING_DATA_UPDATE_INTERVAL) setRed:([lastDataUpdate timeIntervalSinceNow] < -ERROR_DATA_UPDATE_INTERVAL)];
+            [StatsController colorizeLabel:self.summaryLastUpdate setOrange:([lastDataUpdate timeIntervalSinceNow] < -WARNING_DATA_UPDATE_INTERVAL) setRed:([lastDataUpdate timeIntervalSinceNow] < -ERROR_DATA_UPDATE_INTERVAL)];
+            
+            self.miscSizeOfLastUpdate.text = [StatsController formatBytes:downloadedBytes];
+            [StatsController colorizeLabel:self.miscSizeOfLastUpdate setOrange:(downloadedBytes > 1024 * 100) setRed:(downloadedBytes > 1024 * 1024)];
+            
+            NSDate* now = [NSDate date];
+            self.miscLastAppRefresh.text = [StatsController printIntervalFor:now];
+            self.lastRefreshDate = now;
             
             [self finishRefreshing];
         });
-
     });
+}
+
++(NSString*) formatBytes:(long long)bytes
+{
+    if (bytes < 1024)
+        return [NSString stringWithFormat:@"%lld bytes", bytes];
+    
+    if (bytes < 1024 * 1024)
+        return [NSString stringWithFormat:@"%.1f kB", (double)bytes / 1024.0];
+    
+    return [NSString stringWithFormat:@"%.1f MB", (double)bytes / (1024.0 * 1024.0)];
+}
+
++(NSString*) downloadURL:(NSURL*)url error:(NSError **)error downloadSize:(long long*)size
+{
+    // Build request
+    NSURLRequest* request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:DATA_DOWNLOAD_TIMEOUT];
+    NSURLResponse* response = nil;
+    
+    // Download data
+    NSData* data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error];
+    if (!data)
+        return nil;
+    
+    // Convert downloaded to String
+    NSString* string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+    // Now get downloaded data size
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+    NSString* contentLength = [[httpResponse allHeaderFields] valueForKey:@"Content-Length"];
+    long long mySize;
+    if (contentLength == nil)
+    {
+        // Some sites don't return a content length. We assume those don't use compression, and fallback to the 'expected content length' property from NSURLResponse.
+        mySize = [response expectedContentLength];
+    }
+    else
+    {
+        // We have the content lenght!
+        mySize = [contentLength longLongValue];
+    }
+    if (size != nil)
+        *size += mySize;
+    //NSLog(@"bytes for url %@ = %lld", url, mySize);
+    
+    return string;
+}
+
++(void)colorizeLabel:(UILabel*)label setOrange:(bool)orange setRed:(bool)red
+{
+    if (red)
+        label.textColor = [UIColor redColor];
+    else if (orange)
+        label.textColor = [UIColor orangeColor];
+    else
+        label.textColor = [UIColor blackColor];
+}
+
++(NSDate*)calculateNextPayoutDateFrom:(NSArray*)payouts
+{
+    NSDate* lastPayoutTime = [[payouts lastObject] objectAtIndex:0];
+    if (abs([lastPayoutTime timeIntervalSinceNow]) < INSUFFICIENT_DATA_INTERVAL)
+        return nil;
+    
+    // Calculate date of next '2:30am' from last payout date
+    NSCalendar* gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSTimeZone* utc = [NSTimeZone timeZoneWithName:@"UTC"];
+    [gregorian setTimeZone:utc];
+    unsigned unitFlags = NSYearCalendarUnit | NSMonthCalendarUnit |  NSDayCalendarUnit;
+    NSDateComponents* components = [gregorian components:unitFlags fromDate:lastPayoutTime];
+    [components setHour:2];
+    [components setMinute:30];
+    NSDate* nextPayout = [gregorian dateFromComponents:components];
+    NSDate* now = [[NSDate alloc] init];
+    
+    if ([nextPayout compare:now] == NSOrderedAscending)
+        nextPayout = [nextPayout dateByAddingTimeInterval:(60 * 60 * 24)];
+    
+    if ([nextPayout compare:now] == NSOrderedAscending)
+    {
+        // Hm next payout calculated from previous payout is before current date. Calculate new payout date from current date instead.
+        components = [gregorian components:unitFlags fromDate:now];
+        [components setHour:2];
+        [components setMinute:30];
+        nextPayout = [gregorian dateFromComponents:components];
+        
+        if (abs([nextPayout timeIntervalSinceNow]) < INSUFFICIENT_DATA_INTERVAL)
+            return nil;
+        
+        if ([nextPayout compare:now] == NSOrderedAscending)
+            nextPayout = [nextPayout dateByAddingTimeInterval:(60 * 60 * 24)];
+    }
+    
+    if (abs([nextPayout timeIntervalSinceNow]) < INSUFFICIENT_DATA_INTERVAL)
+        return nil;
+    
+    return nextPayout;
+}
+
++(NSString*)formatNextPayoutDate:(NSDate*)nextPayoutDate
+{
+    if (nextPayoutDate == nil)
+        return @"Any moment now";
+    
+    long seconds = (long)abs([nextPayoutDate timeIntervalSinceNow]);
+    if (seconds <= 60)
+        return @"Any moment now";
+    
+    seconds = seconds / 60;
+    if (seconds <= 60)
+        return [NSString stringWithFormat:@"%ld minutes", seconds];
+    
+    long hours = seconds / 60;
+    long minutes = seconds % 60;
+    
+    return [NSString stringWithFormat:@"%ld hours %ld mins", hours, minutes];
+}
+
++(NSArray*) parsePayoutsDataFrom:(NSString*)data isPool:(bool)isPool
+{
+    NSMutableArray* result = [[NSMutableArray alloc] init];
+    
+    if (!isPool)
+    {
+        // Easy case: we just need to parse the JSON and add to the array.
+        NSError *localError = nil;
+        NSDictionary *parsedObject = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&localError];
+        
+        NSArray *items = [parsedObject valueForKey:@"report"];
+        for (NSDictionary *groupDic in items)
+        {
+            NSNumber* amount = [groupDic valueForKey:@"amount"];
+            long time = [[groupDic valueForKey:@"time"] longValue];
+            NSDate* date = [NSDate dateWithTimeIntervalSince1970:time];
+            NSArray* entry = [NSArray arrayWithObjects:date, amount, nil];
+            [result addObject:entry];
+        }
+    }
+    else
+    {
+        // Here we do a bit of a hack: we add a single entry with a nil date that has the total paid out amount (so that when we go to calculate the total paid out value it still works)
+        NSString* totalPaidOutString = [StatsController extractStringFromHTML:data usingRegex:@"<td>(.*)</td>\n</tr>" getLast:true];
+        
+        NSNumber* amount = [NSNumber numberWithDouble:[totalPaidOutString doubleValue]];
+        NSDate* date = [[NSDate alloc] init];
+        NSArray* entry = [NSArray arrayWithObjects:date, amount, nil];
+        [result addObject:entry];
+    }
+    
+    //NSLog(@"Values:");
+    //for (id value in result)
+    //    NSLog(@" %@", value);
+    
+    return result;
 }
 
 +(NSDate*) readDate:(NSString*)utcDate withOption:(bool)useAltFormat
@@ -562,6 +849,33 @@
     
     //NSLog(@"parsed date: %@", parsed);
     return [StatsController printLocalDate:parsed];
+}
+
++(NSString*) printIntervalFor:(NSDate*)date
+{
+    //NSLog(@"printing interval for %@", date);
+    NSTimeInterval seconds = [date timeIntervalSinceNow];
+    bool isAfterNow = seconds > 0;
+    seconds = abs(seconds);
+    
+    NSString* fragment;
+    if (seconds < 60)
+        fragment = [NSString stringWithFormat:@"%.0f seconds", seconds];
+    else if (seconds < 60 * 60)
+        fragment = [NSString stringWithFormat:@"%.0f minutes", (seconds / 60.0)];
+    else if (seconds < 60 * 60 * 30)
+    {
+        long tmp = seconds / 60;
+        long hours = tmp / 60;
+        long minutes = tmp % 60;
+        fragment = [NSString stringWithFormat:@"%ldh %ldm", hours, minutes];
+    }
+    else
+        return [StatsController printLocalDate:date];
+    
+    if (isAfterNow)
+        return [NSString stringWithFormat:@"in %@", fragment];
+    return [NSString stringWithFormat:@"%@ ago", fragment];
 }
 
 +(NSString*) printLocalDate:(NSDate*) date
@@ -601,7 +915,7 @@
     return [NSString stringWithFormat:@"%.4f", rate];
 }
 
-+(void)setLabelText:(UILabel*)label toValue:(NSString*)text
+/*+(void)setLabelText:(UILabel*)label toValue:(NSString*)text
 {
     [StatsController setLabelText:label toValue:text withColor:[UIColor blackColor]];
 }
@@ -620,7 +934,7 @@
 {
     label.textColor = color;
     label.text = text;
-}
+}*/
 
 +(NSString*)formatBTCFromString:(NSString*)amount withExchangeRate:(double)rate andSymbol:(NSString*)symbol
 {
@@ -629,6 +943,9 @@
 
 +(NSString*)formatBTCFromDouble:(double)amount withExchangeRate:(double)rate andSymbol:(NSString*)symbol
 {
+    if (isnan(amount))
+        return @"N/A";
+    
     NSString* btc;
     if (amount > 100.0)
         btc = [NSString stringWithFormat:@"%.0f %@", amount, BITCOIN_SYMBOL];
@@ -681,6 +998,89 @@
 {
     NSString* myHTML = [NSString stringWithFormat:@"%@%@%@", @"<html><head><meta name=\"viewport\" content=\"width=device-width\" /><style type=\"text/css\">body { margin:5px }</style></head><body><div style=\"width:520px; height:378px; overflow:hidden;\"><canvas id=\"mc_data\" width=\"520\" height=\"400\">Hm no HTML canvas graphics support??</canvas><script type=\"text/javascript\">", javascriptData, @"</script></html></body>"];
     return myHTML;
+}
+
++(NSDictionary*) calculateStatsFrom:(NSArray*)payouts forDays:(int)days andHashRate:(double)hashRate
+{
+    NSMutableDictionary* result = [[NSMutableDictionary alloc] init];
+    
+    double total = 0.0;
+    double squaresTotal = 0.0;
+    double min = 1.0E100;
+    double max = -1.0;
+    int count = 0;
+    //int usedDays = 0;
+
+    NSDate* startDate = [NSDate dateWithTimeIntervalSinceNow:(-1 * days * 24 * 60 * 60)];
+    //NSLog(@"start date: %@", startDate);
+    
+    //NSDate* previousDate = [[[payouts objectAtIndex:0] objectAtIndex:0] dateByAddingTimeInterval:(-1 * 24 * 60 * 60)];
+    
+    for (NSArray* entry in payouts)
+    {
+        NSDate* date = [entry objectAtIndex:0];
+        
+        if ([date compare:startDate] == NSOrderedDescending)
+        {
+            // Date is after our start date! We can use this data.
+            //NSLog(@"Considered data: %@", entry);
+            
+            count++;
+            double amount = [[entry objectAtIndex:1] doubleValue];
+            total += amount;
+            squaresTotal += amount * amount;
+            min = MIN(min, amount);
+            max = MAX(max, amount);
+        }
+        
+        //previousDate = date;
+    }
+    
+    // Now calculate average and stddev.
+    double average;
+    if (count == 0)
+        average = 0.0/0.0;
+    else
+        average = total / count;
+    
+    double stdev;
+    if (count <= 2)
+        stdev = 0.0/0.0;
+    else
+        stdev = sqrt((count * squaresTotal - total * total) / (count * (count - 1)));
+    
+    double perMHs;
+    if (hashRate <= 0.0)
+        perMHs = 0.0/0.0;
+    else
+        perMHs = average / hashRate;
+    
+    // Special cases
+    if (min == 1.0E100)
+        min = 0.0/0.0;
+    if (max < 0.0)
+        max = 0.0/0.0;
+    
+    // Now put all values in the dictionnary.
+    [result setObject:[NSNumber numberWithDouble:average] forKey:@"average"];
+    [result setObject:[NSNumber numberWithDouble:total] forKey:@"total"];
+    [result setObject:[NSNumber numberWithDouble:stdev] forKey:@"stdev"];
+    [result setObject:[NSNumber numberWithDouble:min] forKey:@"min"];
+    [result setObject:[NSNumber numberWithDouble:max] forKey:@"max"];
+    [result setObject:[NSNumber numberWithDouble:perMHs] forKey:@"perMHs"];
+    [result setObject:[NSNumber numberWithInt:count] forKey:@"count"];
+    
+    return result;
+}
+
+-(void)timerTriggered:(NSTimer*)timer
+{
+    NSDate* lastUpdate = self.lastRefreshDate;
+    if (lastUpdate != nil)
+    {
+        //NSLog(@"timer fired at %@", [[NSDate alloc] init]);
+        self.miscLastAppRefresh.text = [StatsController printIntervalFor:lastUpdate];
+    }
 }
 
 @end

@@ -45,6 +45,8 @@
         self.minerAddress.text = TEST_ADDRESS2;
     if ([self.minerAddress.text isEqualToString:@"test3"])
         self.minerAddress.text = TEST_ADDRESS3;
+    if ([self.minerAddress.text isEqualToString:@"test4"])
+        self.minerAddress.text = TEST_ADDRESS4;
 }
 
 - (IBAction)addMiner:(id)sender {
@@ -55,6 +57,8 @@
         address = TEST_ADDRESS2;
     if ([address isEqualToString:@"test3"])
         address = TEST_ADDRESS3;
+    if ([address isEqualToString:@"test4"])
+        address = TEST_ADDRESS4;
     if (![Miner isValidAddress:address])
     {
         UIAlertView* alert = [[UIAlertView alloc] initWithTitle:nil message:@"A valid 34-character worker address must be entered." delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];

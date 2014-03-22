@@ -8,6 +8,7 @@
 
 #import "RigStatusController.h"
 #import "StatsController.h"
+#import "Constants.h"
 
 @interface RigStatusController ()
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
@@ -37,17 +38,22 @@
     [self.webView.scrollView addSubview:refresh];
     
     self.webView.scrollView.scrollsToTop = true;
+    
+    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
-    self.edgesForExtendedLayout = UIRectEdgeAll;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
+        self.edgesForExtendedLayout = UIRectEdgeAll;
+    
     float headerSize = 20; // status bar height
     if (self.navigationController && self.navigationController.navigationBarHidden == NO)
         headerSize += self.navigationController.toolbar.frame.size.height;
     float tabBarSize = 49;
+    
     self.webView.scrollView.contentInset = UIEdgeInsetsMake(headerSize, 0, tabBarSize, 0);
     
     [self.refresh beginRefreshing];

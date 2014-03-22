@@ -8,6 +8,7 @@
 
 #import "NewsController.h"
 #import "StatsController.h"
+#import "Constants.h"
 
 @interface NewsController ()
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
@@ -44,7 +45,9 @@
 {
     [super viewWillAppear:animated];
     
-    self.edgesForExtendedLayout = UIRectEdgeAll;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
+        self.edgesForExtendedLayout = UIRectEdgeAll;
+    
     float headerSize = 20; // status bar height
     if (self.navigationController && self.navigationController.navigationBarHidden == NO)
         headerSize += self.navigationController.toolbar.frame.size.height;

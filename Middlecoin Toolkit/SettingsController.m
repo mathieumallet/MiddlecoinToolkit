@@ -12,6 +12,8 @@
 @interface SettingsController ()
 @property (weak, nonatomic) IBOutlet UITextField *rigAddress;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UITableViewCell *currencyPickerTableView;
+@property (weak, nonatomic) IBOutlet UIView *currencyPickerContentView;
 @property (weak, nonatomic) IBOutlet UIPickerView *currencyPicker;
 @property NSArray* currencies;
 
@@ -41,7 +43,6 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-    self.edgesForExtendedLayout = UIRectEdgeAll;
     //self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 120, 0);
     
     self.rigAddress.text = [[NSUserDefaults standardUserDefaults] objectForKey:@"rigAddress"];
@@ -54,7 +55,8 @@
 {
     [super viewWillAppear:animated];
     
-    self.edgesForExtendedLayout = UIRectEdgeAll;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
+        self.edgesForExtendedLayout = UIRectEdgeAll;
     float headerSize = 20; // status bar height
     if (self.navigationController && self.navigationController.navigationBarHidden == NO)
         headerSize += self.navigationController.toolbar.frame.size.height;
@@ -81,6 +83,15 @@
     }
     
     [self.currencyPicker selectRow:row inComponent:0 animated:false];
+}
+
+-(void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    
+    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
+        self.currencyPicker.frame = CGRectMake(-10, 8, 320, 162);
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -158,6 +169,7 @@
                        [NSArray arrayWithObjects:@"Chinese renminbi", @"CNY", nil],
                        [NSArray arrayWithObjects:@"Danish krone", @"DKK", nil],
                        [NSArray arrayWithObjects:@"Euro", @"EUR", nil],
+                       [NSArray arrayWithObjects:@"Japanese yen", @"JPY", nil],
                        [NSArray arrayWithObjects:@"Pound sterling", @"GBP", nil],
                        [NSArray arrayWithObjects:@"Hong Kong dollar", @"HKD", nil],
                        [NSArray arrayWithObjects:@"South Korean won", @"KRW", nil],
